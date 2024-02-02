@@ -8,14 +8,6 @@ server:
     include-stacktrace: never
 
 spring:
-#  spring:
-#    datasource:
-#      url: jdbc:h2:mem:mydb
-#      username: sa
-#      password: password
-#      driverClassName: org.h2.Driver
-#    jpa:
-#      spring.jpa.database-platform: org.hibernate.dialect.H2Dialect
   datasource:
     url: jdbc:postgresql://localhost:5432/dundie
     username: dundie
@@ -24,12 +16,6 @@ spring:
     show-sql: true
     generate-ddl: false
     open-in-view: false
-#    properties:
-      ## Hibernate Properties
-      # The SQL dialect makes Hibernate generate better SQL for the chosen database
-#      hibernate:
-#        dialect: org.hibernate.dialect.PostgreSQLDialect
-    # Hibernate ddl auto (create, create-drop, validate, update)
     hibernate:
       ddl-auto: none
     database: postgresql
@@ -43,3 +29,7 @@ spring:
       static-locations: file:src/main/resources/static/
       cache:
         period: 0
+
+redis:
+  ttl:
+    dundie-rewards: 1h
