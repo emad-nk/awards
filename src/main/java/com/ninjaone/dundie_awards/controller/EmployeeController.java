@@ -1,22 +1,19 @@
 package com.ninjaone.dundie_awards.controller;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
+import com.ninjaone.dundie_awards.controller.dto.request.EmployeeRequest;
+import com.ninjaone.dundie_awards.service.EmployeeService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
-import com.ninjaone.dundie_awards.AwardsCache;
-import com.ninjaone.dundie_awards.MessageBroker;
-import com.ninjaone.dundie_awards.model.Activity;
 import com.ninjaone.dundie_awards.model.Employee;
-import com.ninjaone.dundie_awards.repository.ActivityRepository;
-import com.ninjaone.dundie_awards.repository.EmployeeRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
+import static org.springframework.http.HttpStatus.OK;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,80 +21,83 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
-@RequestMapping()
+@RestController
+@RequestMapping("/api/v1/")
 public class EmployeeController {
 
-    @Autowired
-    private EmployeeRepository employeeRepository;
+    private static final Logger LOGGER = LoggerFactory.getLogger(EmployeeService.class);
 
-    @Autowired
-    private ActivityRepository activityRepository;
+//    @Autowired
+//    private EmployeeRepository employeeRepository;
+//
+//    @Autowired
+//    private ActivityRepository activityRepository;
+//
+//    @Autowired
+//    private MessageBroker messageBroker;
+//
+//    @Autowired
+//    private AwardsCache awardsCache;
 
-    @Autowired
-    private MessageBroker messageBroker;
+    private final EmployeeService employeeService;
 
-    @Autowired
-    private AwardsCache awardsCache;
+    public EmployeeController(EmployeeService employeeService) {
+        this.employeeService = employeeService;
+    }
 
-    // get all employees
     @GetMapping("/employees")
-    @ResponseBody
+    @Operation(summary = "Gets all the employees")
+    @ResponseStatus(code = OK)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successful")
+    })
     public List<Employee> getAllEmployees() {
-        return employeeRepository.findAll();
+        return employeeService.getAllEmployees();
     }
 
-    // create employee rest api
     @PostMapping("/employees")
-    @ResponseBody
-    public Employee createEmployee(@RequestBody Employee employee) {
-        return employeeRepository.save(employee);
+    @Operation(summary = "Saves a new employee in the DB")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Could save")
+    })
+    @ResponseStatus(code = CREATED)
+    public Employee createEmployee(@RequestBody EmployeeRequest employeeRequest) {
+        return employeeService.createEmployee(employeeRequest);
     }
 
-    // get employee by id rest api
     @GetMapping("/employees/{id}")
-    @ResponseBody
+    @Operation(summary = "Gets an employee by ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successful"),
+            @ApiResponse(responseCode = "404", description = "Not found"),
+    })
+    @ResponseStatus(code = OK)
     public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {
-        Optional<Employee> optionalEmployee = employeeRepository.findById(id);
-        if (optionalEmployee.isPresent()) {
-            return ResponseEntity.ok(optionalEmployee.get());
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        return ResponseEntity.ok(employeeService.getEmployee(id));
     }
 
-    // update employee rest api
     @PutMapping("/employees/{id}")
-    @ResponseBody
-    public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody Employee employeeDetails) {
-        Optional<Employee> optionalEmployee = employeeRepository.findById(id);
-        if (!optionalEmployee.isPresent()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        Employee employee = optionalEmployee.get();
-        employee.setFirstName(employeeDetails.getFirstName());
-        employee.setLastName(employeeDetails.getLastName());
-
-        Employee updatedEmployee = employeeRepository.save(employee);
-        return ResponseEntity.ok(updatedEmployee);
+    @Operation(summary = "Updates an employee by ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successful"),
+            @ApiResponse(responseCode = "404", description = "Not found"),
+    })
+    @ResponseStatus(code = OK)
+    public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody EmployeeRequest employeeRequest) {
+        return ResponseEntity.ok(employeeService.updateEmployee(id, employeeRequest));
     }
 
-    // delete employee rest api
     @DeleteMapping("/employees/{id}")
-    @ResponseBody
-    public ResponseEntity<Map<String, Boolean>> deleteEmployee(@PathVariable Long id) {
-        Optional<Employee> optionalEmployee = employeeRepository.findById(id);
-        if (!optionalEmployee.isPresent()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        Employee employee = optionalEmployee.get();
-        employeeRepository.delete(employee);
-        Map<String, Boolean> response = new HashMap<>();
-        response.put("deleted", Boolean.TRUE);
-        return ResponseEntity.ok(response);
+    @Operation(summary = "Deletes an employee by ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "No content, succesfully deleted"),
+            @ApiResponse(responseCode = "404", description = "Not found"),
+    })
+    @ResponseStatus(code = NO_CONTENT)
+    public void deleteEmployee(@PathVariable Long id) {
+        employeeService.deleteEmployee(id);
     }
 }
