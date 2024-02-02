@@ -1,6 +1,7 @@
 package com.ninjaone.dundie_awards.controller;
 
 import com.ninjaone.dundie_awards.controller.dto.request.EmployeeRequest;
+import com.ninjaone.dundie_awards.controller.dto.response.EmployeeDTO;
 import com.ninjaone.dundie_awards.service.EmployeeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -8,8 +9,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.util.List;
 
 import com.ninjaone.dundie_awards.model.Employee;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springdoc.api.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
@@ -26,9 +32,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/")
+@Slf4j
+@AllArgsConstructor
 public class EmployeeController {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(EmployeeService.class);
 
 //    @Autowired
 //    private EmployeeRepository employeeRepository;
@@ -44,18 +50,14 @@ public class EmployeeController {
 
     private final EmployeeService employeeService;
 
-    public EmployeeController(EmployeeService employeeService) {
-        this.employeeService = employeeService;
-    }
-
     @GetMapping("/employees")
     @Operation(summary = "Gets all the employees")
     @ResponseStatus(code = OK)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful")
     })
-    public List<Employee> getAllEmployees() {
-        return employeeService.getAllEmployees();
+    public Page<EmployeeDTO> getAllEmployees(@ParameterObject Pageable pageable) {
+        return employeeService.getAllEmployees(pageable);
     }
 
     @PostMapping("/employees")
@@ -64,7 +66,7 @@ public class EmployeeController {
             @ApiResponse(responseCode = "201", description = "Could save")
     })
     @ResponseStatus(code = CREATED)
-    public Employee createEmployee(@RequestBody EmployeeRequest employeeRequest) {
+    public EmployeeDTO createEmployee(@RequestBody EmployeeRequest employeeRequest) {
         return employeeService.createEmployee(employeeRequest);
     }
 

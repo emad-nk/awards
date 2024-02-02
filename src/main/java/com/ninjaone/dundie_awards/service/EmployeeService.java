@@ -3,16 +3,22 @@ package com.ninjaone.dundie_awards.service;
 import com.ninjaone.dundie_awards.AwardsCache;
 import com.ninjaone.dundie_awards.MessageBroker;
 import com.ninjaone.dundie_awards.controller.dto.request.EmployeeRequest;
+import com.ninjaone.dundie_awards.controller.dto.response.EmployeeDTO;
 import com.ninjaone.dundie_awards.exception.EntityNotFoundException;
 import com.ninjaone.dundie_awards.model.Employee;
 import com.ninjaone.dundie_awards.repository.ActivityRepository;
 import com.ninjaone.dundie_awards.repository.EmployeeRepository;
-import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.UUID;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
+@AllArgsConstructor
+@Slf4j
 public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
@@ -20,31 +26,25 @@ public class EmployeeService {
     private final MessageBroker messageBroker;
     private final AwardsCache awardsCache;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(EmployeeService.class);
-
-    public EmployeeService(
-            final EmployeeRepository employeeRepository,
-            final ActivityRepository activityRepository,
-            final MessageBroker messageBroker,
-            final AwardsCache awardsCache
-    ) {
-        this.employeeRepository = employeeRepository;
-        this.activityRepository = activityRepository;
-        this.messageBroker = messageBroker;
-        this.awardsCache = awardsCache;
-    }
-
-    public List<Employee> getAllEmployees() {
-        return employeeRepository.findAll();
-    }
-
-    public Employee createEmployee(EmployeeRequest employeeRequest) {
-        var employee = new Employee(
-                employeeRequest.firstName(),
-                employeeRequest.lastName(),
-                employeeRequest.organization()
+    public Page<EmployeeDTO> getAllEmployees(Pageable pageable) {
+        var result = employeeRepository.getEmployees(pageable);
+        return new PageImpl<>(
+                result.map(Employee::toEmployeeDTO).stream().toList(),
+                pageable,
+                result.getTotalElements()
         );
-        return  employeeRepository.save(employee);
+    }
+
+    public EmployeeDTO createEmployee(EmployeeRequest employeeRequest) {
+        var employee = Employee.builder()
+                .id(UUID.randomUUID().toString())
+                .firstName(employeeRequest.firstName())
+                .lastName(employeeRequest.lastName())
+                .dundieAwards(0)
+                .organization(employeeRequest.organization())
+                .build();
+
+        return employeeRepository.save(employee).toEmployeeDTO();
     }
 
     public Employee getEmployee(Long id) {

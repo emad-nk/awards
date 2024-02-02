@@ -1,38 +1,29 @@
 package com.ninjaone.dundie_awards.model;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import java.time.Instant;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "activities")
+@Table(name = "activity")
+@NoArgsConstructor
+@Getter
 public class Activity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private String id;
 
-    @Column(name = "occured_at")
-    private LocalDateTime occuredAt;
+    @Column(name = "occurred_at")
+    private Instant occurredAt;
 
     @Column(name = "event")
     private String event;
 
-    public Activity() {
 
-    }
-
-    public Activity(LocalDateTime localDateTime, String event) {
+    public Activity(Instant occurredAt, String event) {
         super();
-        this.occuredAt = localDateTime;
+        this.occurredAt = occurredAt;
         this.event = event;
     }
-
-    public LocalDateTime getOccuredAt() {
-        return occuredAt;
-    }
-
-    public String getEvent() {
-        return event;
-    }
-
 }

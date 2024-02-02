@@ -6,8 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class DundieAwardsApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(DundieAwardsApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(DundieAwardsApplication.class, args);
+    }
 
 }

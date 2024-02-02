@@ -4,6 +4,7 @@ import com.ninjaone.dundie_awards.model.Employee;
 import com.ninjaone.dundie_awards.model.Organization;
 import com.ninjaone.dundie_awards.repository.EmployeeRepository;
 import com.ninjaone.dundie_awards.repository.OrganizationRepository;
+import java.util.UUID;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -28,26 +29,26 @@ public class DataLoader implements CommandLineRunner {
         // employeeRepository.deleteAll();
         // organizationRepository.deleteAll();
 
-        if (employeeRepository.count() == 0) {
-            Organization organizationPikashu = new Organization("Pikashu");
-            organizationRepository.save(organizationPikashu);
-
-            employeeRepository.save(new Employee("John", "Doe", organizationPikashu));
-            employeeRepository.save(new Employee("Jane", "Smith", organizationPikashu));
-            employeeRepository.save(new Employee("Creed", "Braton", organizationPikashu));
-
-            Organization organizationSquanchy = new Organization("Squanchy");
-            organizationRepository.save(organizationSquanchy);
-
-            employeeRepository.save(new Employee("Michael", "Scott", organizationSquanchy));
-            employeeRepository.save(new Employee("Dwight", "Schrute", organizationSquanchy));
-            employeeRepository.save(new Employee("Jim", "Halpert", organizationSquanchy));
-            employeeRepository.save(new Employee("Pam", "Beesley", organizationSquanchy));
-        }
-
-        int totalAwards = employeeRepository.findAll().stream()
-                .mapToInt(employee -> Objects.requireNonNullElse(employee.getDundieAwards(), 0))
-                .sum();
-        this.awardsCache.setTotalAwards(totalAwards);
+//        if (employeeRepository.count() == 0) {
+//            Organization organizationPikashu = new Organization(UUID.randomUUID().toString(), "Pikashu");
+//            organizationRepository.save(organizationPikashu);
+//
+//            employeeRepository.save(new Employee("John", "Doe", organizationPikashu));
+//            employeeRepository.save(new Employee("Jane", "Smith", organizationPikashu));
+//            employeeRepository.save(new Employee("Creed", "Braton", organizationPikashu));
+//
+//            Organization organizationSquanchy = new Organization(UUID.randomUUID().toString(), "Squanchy");
+//            organizationRepository.save(organizationSquanchy);
+//
+//            employeeRepository.save(new Employee("Michael", "Scott", organizationSquanchy));
+//            employeeRepository.save(new Employee("Dwight", "Schrute", organizationSquanchy));
+//            employeeRepository.save(new Employee("Jim", "Halpert", organizationSquanchy));
+//            employeeRepository.save(new Employee("Pam", "Beesley", organizationSquanchy));
+//        }
+//
+//        int totalAwards = employeeRepository.findAll().stream()
+//                .mapToInt(employee -> Objects.requireNonNullElse(employee.getDundieAwards(), 0))
+//                .sum();
+//        this.awardsCache.setTotalAwards(totalAwards);
     }
 }

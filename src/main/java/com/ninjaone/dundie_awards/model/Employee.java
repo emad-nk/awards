@@ -1,14 +1,24 @@
 package com.ninjaone.dundie_awards.model;
 
+import com.ninjaone.dundie_awards.controller.dto.response.EmployeeDTO;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
-@Table(name = "employees")
+@Table(name = "employee")
+@Setter
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Employee {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private String id;
 
     @Column(name = "first_name")
     private String firstName;
@@ -17,59 +27,18 @@ public class Employee {
     private String lastName;
 
     @Column(name = "dundie_awards")
-    private Integer dundieAwards;
+    Integer dundieAwards;
 
     @ManyToOne
     private Organization organization;
 
-    public Employee() {
-
-    }
-
-    public Employee(String firstName, String lastName, Organization organization) {
-        super();
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.organization = organization;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public Organization getOrganization() {
-        return organization;
-    }
-
-    public void setOrganization(Organization organization) {
-        this.organization = organization;
-    }
-
-    public void setDundieAwards(int dundieAwards){
-        this.dundieAwards = dundieAwards;
-    }
-
-    public Integer getDundieAwards(){
-        return dundieAwards;
+    public EmployeeDTO toEmployeeDTO() {
+        return EmployeeDTO.builder()
+                .id(this.id)
+                .firstName(this.firstName)
+                .lastName(this.lastName)
+                .dundieAwards(this.dundieAwards)
+                .organization(this.organization)
+                .build();
     }
 }
