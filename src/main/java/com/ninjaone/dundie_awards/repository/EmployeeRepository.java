@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface EmployeeRepository extends JpaRepository<Employee, Long> {
+public interface EmployeeRepository extends JpaRepository<Employee, String> {
 
     @Query(
             nativeQuery = true,
@@ -16,5 +16,5 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
                 select * from employee
                 """
     )
-    public Page<Employee> getEmployees(Pageable pageable);
+    Page<Employee> getEmployees(Pageable pageable);
 }

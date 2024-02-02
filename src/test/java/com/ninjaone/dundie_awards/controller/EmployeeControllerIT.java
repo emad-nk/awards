@@ -17,6 +17,8 @@ import static io.restassured.http.ContentType.JSON;
 import java.util.ArrayList;
 import java.util.List;
 import static org.apache.http.HttpStatus.SC_CREATED;
+import static org.apache.http.HttpStatus.SC_NOT_FOUND;
+import static org.apache.http.HttpStatus.SC_NO_CONTENT;
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Test;
@@ -41,16 +43,16 @@ class EmployeeControllerIT extends IntegrationTestParent {
         organizationRepository.save(organization);
 
         EmployeeDTO employeeDTO = given()
-                        .contentType(JSON)
-                        .when()
-                        .body(employeeRequest)
-                        .post(EMPLOYEE_URI)
-                        .then()
-                        .log().ifValidationFails()
-                        .statusCode(SC_CREATED)
-                        .extract()
-                        .body()
-                        .as(EmployeeDTO.class);
+                .contentType(JSON)
+                .when()
+                .body(employeeRequest)
+                .post(EMPLOYEE_URI)
+                .then()
+                .log().ifValidationFails()
+                .statusCode(SC_CREATED)
+                .extract()
+                .body()
+                .as(EmployeeDTO.class);
 
         assertThat(employeeDTO.id()).isNotNull();
         assertThat(employeeDTO.firstName()).isEqualTo(employeeRequest.firstName());
@@ -59,7 +61,7 @@ class EmployeeControllerIT extends IntegrationTestParent {
     }
 
     @Test
-    void getsAllEmployeesByPagingAndSorting() throws JsonProcessingException {
+    void getsAllEmployeesByPagingAndSortingThem() throws JsonProcessingException {
         var organization = dummyOrganization();
         var employee1 = dummyEmployee("Alex", "Pascal", organization);
         var employee2 = dummyEmployee("John", "Doe", organization);
@@ -67,7 +69,7 @@ class EmployeeControllerIT extends IntegrationTestParent {
 
 
         organizationRepository.save(organization);
-        employeeRepository.saveAll(new ArrayList<>(){{
+        employeeRepository.saveAll(new ArrayList<>() {{
             add(employee1);
             add(employee2);
             add(employee3);
@@ -81,6 +83,103 @@ class EmployeeControllerIT extends IntegrationTestParent {
         assertThat(page1.content().stream().map(EmployeeDTO::lastName).toList()).containsExactly("Bond", "Doe");
         assertThat(page2.content()).hasSize(1);
         assertThat(page2.content().stream().map(EmployeeDTO::lastName).toList()).containsExactly("Pascal");
+    }
+
+    @Test
+    void getsAnEmployeeById() {
+        var organization = dummyOrganization();
+        var employee = dummyEmployee("Alex", "Pascal", organization);
+        var expectedEmployeeDTO = employee.toEmployeeDTO();
+
+        organizationRepository.save(organization);
+        employeeRepository.save(employee);
+
+        EmployeeDTO employeeDTO = given()
+                .contentType(JSON)
+                .when()
+                .pathParam("id", employee.getId())
+                .get(EMPLOYEE_URI + "/{id}")
+                .then()
+                .log().ifValidationFails()
+                .statusCode(SC_OK)
+                .extract()
+                .body()
+                .as(EmployeeDTO.class);
+
+        assertThat(employeeDTO).isEqualTo(expectedEmployeeDTO);
+    }
+
+    @Test
+    void deletedAnEmployeeById() {
+        var organization = dummyOrganization();
+        var employee = dummyEmployee("Alex", "Pascal", organization);
+
+        organizationRepository.save(organization);
+        employeeRepository.save(employee);
+
+        given()
+                .contentType(JSON)
+                .when()
+                .pathParam("id", employee.getId())
+                .delete(EMPLOYEE_URI + "/{id}")
+                .then()
+                .log().ifValidationFails()
+                .statusCode(SC_NO_CONTENT);
+
+        assertThat(employeeRepository.findAll()).isEmpty();
+    }
+
+    @Test
+    void throwsNotFoundExceptionWhenDeletingAnEmployeeThatDoesNotExist() {
+        given()
+                .contentType(JSON)
+                .when()
+                .pathParam("id", "non-existent")
+                .delete(EMPLOYEE_URI + "/{id}")
+                .then()
+                .log().ifValidationFails()
+                .statusCode(SC_NOT_FOUND);
+    }
+
+    @Test
+    void updatesAnEmployee() {
+        var organization = dummyOrganization();
+        var employee = dummyEmployee("Alex", "Pascal", organization);
+        var employeeRequest = dummyEmployeeRequest("Alex", "Doe", organization);
+
+        organizationRepository.save(organization);
+        employeeRepository.save(employee);
+
+        EmployeeDTO employeeDTO = given()
+                .contentType(JSON)
+                .when()
+                .pathParam("id", employee.getId())
+                .body(employeeRequest)
+                .put(EMPLOYEE_URI + "/{id}")
+                .then()
+                .log().ifValidationFails()
+                .statusCode(SC_OK)
+                .extract()
+                .body()
+                .as(EmployeeDTO.class);
+
+        assertThat(employeeDTO.id()).isEqualTo(employee.getId());
+        assertThat(employeeDTO.lastName()).isEqualTo(employeeRequest.lastName());
+    }
+
+    @Test
+    void throwsNotFoundExceptionWhenUpdatingAnEmployeeThatDoesNotExist() {
+        var organization = dummyOrganization();
+        var employeeRequest = dummyEmployeeRequest("Alex", "Doe", organization);
+        given()
+                .contentType(JSON)
+                .when()
+                .pathParam("id", "non-existent")
+                .body(employeeRequest)
+                .put(EMPLOYEE_URI + "/{id}")
+                .then()
+                .log().ifValidationFails()
+                .statusCode(SC_NOT_FOUND);
     }
 
     private CustomPage<EmployeeDTO> getEmployees(int page, int size, String sort) throws JsonProcessingException {
@@ -98,6 +197,7 @@ class EmployeeControllerIT extends IntegrationTestParent {
                 .body()
                 .asString();
 
-        return objectMapper.readValue(response, new TypeReference<>(){});
+        return objectMapper.readValue(response, new TypeReference<>() {
+        });
     }
 }

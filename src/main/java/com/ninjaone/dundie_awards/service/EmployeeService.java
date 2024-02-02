@@ -47,26 +47,26 @@ public class EmployeeService {
         return employeeRepository.save(employee).toEmployeeDTO();
     }
 
-    public Employee getEmployee(Long id) {
-        return getEmployeeChecked(id);
+    public EmployeeDTO getEmployee(String id) {
+        return getEmployeeChecked(id).toEmployeeDTO();
     }
 
-    public Employee updateEmployee(Long id, EmployeeRequest employeeRequest) {
+    public EmployeeDTO updateEmployee(String id, EmployeeRequest employeeRequest) {
         var employee = getEmployeeChecked(id);
 
         employee.setFirstName(employeeRequest.firstName());
         employee.setLastName(employeeRequest.lastName());
         employee.setOrganization(employeeRequest.organization());
 
-        return employeeRepository.save(employee);
+        return employeeRepository.save(employee).toEmployeeDTO();
     }
 
-    public void deleteEmployee(Long id) {
+    public void deleteEmployee(String id) {
         var employee = getEmployeeChecked(id);
         employeeRepository.delete(employee);
     }
 
-    private Employee getEmployeeChecked(Long id) {
+    private Employee getEmployeeChecked(String id) {
         return employeeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Employee not found with id:" + id)
                 );

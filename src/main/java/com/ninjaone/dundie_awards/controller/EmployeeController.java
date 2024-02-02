@@ -2,17 +2,13 @@ package com.ninjaone.dundie_awards.controller;
 
 import com.ninjaone.dundie_awards.controller.dto.request.EmployeeRequest;
 import com.ninjaone.dundie_awards.controller.dto.response.EmployeeDTO;
+import com.ninjaone.dundie_awards.model.Employee;
 import com.ninjaone.dundie_awards.service.EmployeeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import java.util.List;
-
-import com.ninjaone.dundie_awards.model.Employee;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -77,8 +73,8 @@ public class EmployeeController {
             @ApiResponse(responseCode = "404", description = "Not found"),
     })
     @ResponseStatus(code = OK)
-    public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {
-        return ResponseEntity.ok(employeeService.getEmployee(id));
+    public EmployeeDTO getEmployeeById(@PathVariable String  id) {
+        return employeeService.getEmployee(id);
     }
 
     @PutMapping("/employees/{id}")
@@ -88,8 +84,8 @@ public class EmployeeController {
             @ApiResponse(responseCode = "404", description = "Not found"),
     })
     @ResponseStatus(code = OK)
-    public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody EmployeeRequest employeeRequest) {
-        return ResponseEntity.ok(employeeService.updateEmployee(id, employeeRequest));
+    public EmployeeDTO updateEmployee(@PathVariable String id, @RequestBody EmployeeRequest employeeRequest) {
+        return employeeService.updateEmployee(id, employeeRequest);
     }
 
     @DeleteMapping("/employees/{id}")
@@ -99,7 +95,7 @@ public class EmployeeController {
             @ApiResponse(responseCode = "404", description = "Not found"),
     })
     @ResponseStatus(code = NO_CONTENT)
-    public void deleteEmployee(@PathVariable Long id) {
+    public void deleteEmployee(@PathVariable String id) {
         employeeService.deleteEmployee(id);
     }
 }
