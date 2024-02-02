@@ -2,6 +2,7 @@ package com.ninjaone.dundie_awards;
 
 import io.restassured.RestAssured;
 import java.util.ArrayList;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,13 +28,11 @@ public class IntegrationTestParent {
     }
 
     void resetDatabase() {
-        var tables = new ArrayList<String>(){
-            {
-                add("employee");
-                add("organization");
-                add("activity");
-            }
-        };
+        var tables = Stream.of(
+                "employee",
+                "organization",
+                "activity"
+        );
         tables.forEach(table -> jdbcTemplate.update("DELETE FROM " + table));
     }
 

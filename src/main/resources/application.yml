@@ -29,7 +29,11 @@ spring:
       static-locations: file:src/main/resources/static/
       cache:
         period: 0
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
 redis:
   ttl:
-    dundie-rewards: 1h
+    dundie-awards: 1h
