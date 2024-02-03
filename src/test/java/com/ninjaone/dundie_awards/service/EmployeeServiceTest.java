@@ -2,17 +2,25 @@ package com.ninjaone.dundie_awards.service;
 
 import com.ninjaone.dundie_awards.AwardsCache;
 import static com.ninjaone.dundie_awards.Fixture.dummyEmployee;
+import static com.ninjaone.dundie_awards.Fixture.dummyEmployeeRequest;
 import static com.ninjaone.dundie_awards.Fixture.dummyOrganization;
 import com.ninjaone.dundie_awards.MessageBroker;
 import com.ninjaone.dundie_awards.controller.dto.response.EmployeeDTO;
+import com.ninjaone.dundie_awards.exception.EntityNotFoundException;
 import com.ninjaone.dundie_awards.repository.ActivityRepository;
 import com.ninjaone.dundie_awards.repository.EmployeeRepository;
+import java.util.Optional;
 import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.any;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
@@ -56,5 +64,80 @@ class EmployeeServiceTest {
         assertThat(result.getTotalPages()).isEqualTo(1);
         assertThat(result.getTotalElements()).isEqualTo(2);
     }
+
+    @Test
+    void createsAnEmployee(){
+        var organization = dummyOrganization();
+        var employeeRequest = dummyEmployeeRequest("Alex", "Fo", organization);
+        var employee = dummyEmployee("Alex", "Fo", organization);
+        var employeeDTO = employee.toEmployeeDTO();
+
+        when(employeeRepository.save(any())).thenReturn(employee);
+
+        var result = employeeService.createEmployee(employeeRequest);
+
+        assertThat(result).isEqualTo(employeeDTO);
+    }
+
+    @Test
+    void getsAnEmployee(){
+        var organization = dummyOrganization();
+        var employee = dummyEmployee("Alex", "Fo", organization);
+        var employeeDTO = employee.toEmployeeDTO();
+
+        when(employeeRepository.findById(employee.getId())).thenReturn(Optional.of(employee));
+
+        var result = employeeService.getEmployee(employee.getId());
+
+        assertThat(result).isEqualTo(employeeDTO);
+    }
+
+    @Test
+    void throwsEntityNotFoundExceptionWhenEmployeeDoesNotExistById(){
+        when(employeeRepository.findById(any())).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> employeeService.getEmployee("non-existent"))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage("Employee not found with id: non-existent");
+    }
+
+    @Test
+    void updatesAnEmployee(){
+        var organization = dummyOrganization();
+        var employee = dummyEmployee("Alex", "Fo", organization);
+        var expectedEmployee = dummyEmployee(employee.getId(), "Suzan", "Kan", organization);
+        var employeeRequest = dummyEmployeeRequest("Suzan", "Kan", organization);
+        var employeeDTO = expectedEmployee.toEmployeeDTO();
+
+        when(employeeRepository.findById(employee.getId())).thenReturn(Optional.of(employee));
+        when(employeeRepository.save(expectedEmployee)).thenReturn(expectedEmployee);
+
+        var result = employeeService.updateEmployee(employee.getId(), employeeRequest);
+
+        assertThat(result).isEqualTo(employeeDTO);
+    }
+
+    @Test
+    void deletesAnEmployee(){
+        var organization = dummyOrganization();
+        var employee = dummyEmployee("Alex", "Fo", organization);
+
+        when(employeeRepository.findById(employee.getId())).thenReturn(Optional.of(employee));
+        doNothing().when(employeeRepository).delete(employee);
+
+        employeeService.deleteEmployee(employee.getId());
+
+        verify(employeeRepository, times(1)).delete(employee);
+    }
+
+    @Test
+    void throwsEntityNotFoundExceptionWhenDeletingAnEmployeeThatDoesNotExist(){
+        when(employeeRepository.findById(any())).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> employeeService.deleteEmployee("non-existent"))
+            .isInstanceOf(EntityNotFoundException.class)
+            .hasMessage("Employee not found with id: non-existent");
+    }
+
 
 }

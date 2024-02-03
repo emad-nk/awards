@@ -2,6 +2,7 @@ package com.ninjaone.dundie_awards.model;
 
 import com.ninjaone.dundie_awards.controller.dto.response.EmployeeDTO;
 import jakarta.persistence.*;
+import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -40,5 +41,22 @@ public class Employee {
                 .dundieAwards(this.dundieAwards)
                 .organization(this.organization)
                 .build();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Employee employee = (Employee) o;
+        return Objects.equals(id, employee.id) &&
+            Objects.equals(firstName, employee.firstName) &&
+            Objects.equals(lastName, employee.lastName) &&
+            Objects.equals(dundieAwards, employee.dundieAwards) &&
+            Objects.equals(organization, employee.organization);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, firstName, lastName, dundieAwards, organization);
     }
 }
