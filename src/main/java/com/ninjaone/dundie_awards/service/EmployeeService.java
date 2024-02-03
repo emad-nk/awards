@@ -26,7 +26,7 @@ public class EmployeeService {
     private final MessageBroker messageBroker;
     private final AwardsCache awardsCache;
 
-    public Page<EmployeeDTO> getAllEmployees(Pageable pageable) {
+    public Page<EmployeeDTO> getAllEmployeesPaged(Pageable pageable) {
         var result = employeeRepository.getEmployees(pageable);
         return new PageImpl<>(
                 result.map(Employee::toEmployeeDTO).stream().toList(),
@@ -68,7 +68,7 @@ public class EmployeeService {
 
     private Employee getEmployeeChecked(String id) {
         return employeeRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Employee not found with id:" + id)
+                .orElseThrow(() -> new EntityNotFoundException("Employee not found with id: " + id)
                 );
     }
 }

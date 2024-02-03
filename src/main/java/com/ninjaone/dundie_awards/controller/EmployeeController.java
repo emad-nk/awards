@@ -2,7 +2,6 @@ package com.ninjaone.dundie_awards.controller;
 
 import com.ninjaone.dundie_awards.controller.dto.request.EmployeeRequest;
 import com.ninjaone.dundie_awards.controller.dto.response.EmployeeDTO;
-import com.ninjaone.dundie_awards.model.Employee;
 import com.ninjaone.dundie_awards.service.EmployeeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -15,7 +14,6 @@ import org.springframework.data.domain.Pageable;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -53,7 +51,7 @@ public class EmployeeController {
             @ApiResponse(responseCode = "200", description = "Successful")
     })
     public Page<EmployeeDTO> getAllEmployees(@ParameterObject Pageable pageable) {
-        return employeeService.getAllEmployees(pageable);
+        return employeeService.getAllEmployeesPaged(pageable);
     }
 
     @PostMapping("/employees")
