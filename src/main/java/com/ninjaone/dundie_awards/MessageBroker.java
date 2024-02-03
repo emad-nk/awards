@@ -10,15 +10,23 @@ import java.util.LinkedList;
 import java.util.List;
 import static java.util.UUID.randomUUID;
 import lombok.Getter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+/**
+ * The usage of message broker is unclear
+ * To mimic that it's running in a different thread and it's async it's called from a different thread via EventListener
+ */
 @Component
 public class MessageBroker {
 
+    // Ideally messages should get deleted after getting processed via message broker.
+    // However usage of message broker in this application is not clear.
     @Getter
     private final List<Activity> messages = new LinkedList<>();
     private final ActivityRepository activityRepository;
 
+    @Autowired
     public MessageBroker(ActivityRepository activityRepository) {
         this.activityRepository = activityRepository;
     }
