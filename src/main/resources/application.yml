@@ -13,7 +13,7 @@ spring:
     username: dundie
     password: dundie
   jpa:
-    show-sql: true
+    show-sql: false # change to true for debugging
     generate-ddl: false
     open-in-view: false
     hibernate:

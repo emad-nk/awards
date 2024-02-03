@@ -33,12 +33,12 @@ public class EmployeeController {
     private final EmployeeService employeeService;
 
     @GetMapping("/employees")
-    @Operation(summary = "Gets all the employees")
+    @Operation(summary = "Gets all the employees paginated")
     @ResponseStatus(code = OK)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful")
     })
-    public Page<EmployeeDTO> getAllEmployees(@ParameterObject Pageable pageable) {
+    public Page<EmployeeDTO> getAllEmployeesPaged(@ParameterObject Pageable pageable) {
         return employeeService.getAllEmployeesPaged(pageable);
     }
 

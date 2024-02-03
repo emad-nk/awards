@@ -1,9 +1,10 @@
 package com.ninjaone.dundie_awards.service;
 
+import com.ninjaone.dundie_awards.AwardsCache;
+import static com.ninjaone.dundie_awards.configuration.RedisConfiguration.CacheNames.EMPLOYEES;
 import com.ninjaone.dundie_awards.controller.dto.request.EmployeeRequest;
 import com.ninjaone.dundie_awards.controller.dto.response.EmployeeDTO;
 import com.ninjaone.dundie_awards.event.EventPublisher;
-import com.ninjaone.dundie_awards.event.Status;
 import static com.ninjaone.dundie_awards.event.Status.ADDED;
 import static com.ninjaone.dundie_awards.event.Status.AWARDED;
 import static com.ninjaone.dundie_awards.event.Status.REMOVED;
@@ -12,12 +13,15 @@ import com.ninjaone.dundie_awards.exception.EntityNotFoundException;
 import com.ninjaone.dundie_awards.model.Employee;
 import com.ninjaone.dundie_awards.repository.EmployeeRepository;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
@@ -26,7 +30,9 @@ public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
     private final EventPublisher eventPublisher;
+    private final AwardsCache awardsCache;
 
+    @Cacheable(EMPLOYEES)
     public Page<EmployeeDTO> getAllEmployeesPaged(Pageable pageable) {
         var result = employeeRepository.getEmployees(pageable);
         return new PageImpl<>(
@@ -52,6 +58,7 @@ public class EmployeeService {
         return getEmployeeChecked(id).toEmployeeDTO();
     }
 
+    @Transactional
     public EmployeeDTO updateEmployee(String id, EmployeeRequest employeeRequest) {
         var employee = getEmployeeChecked(id);
 
@@ -63,11 +70,13 @@ public class EmployeeService {
         return employeeRepository.save(employee).toEmployeeDTO();
     }
 
+    @Transactional
     public EmployeeDTO updateEmployeeAward(String id) {
         var employee = getEmployeeChecked(id);
         employee.setDundieAwards(employee.getDundieAwards() + 1);
 
         eventPublisher.publish(employee, AWARDED);
+        CompletableFuture.runAsync(awardsCache::addOneAward);
         return employeeRepository.save(employee).toEmployeeDTO();
     }
 

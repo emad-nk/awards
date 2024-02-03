@@ -12,6 +12,7 @@ public class EventPublisher {
     private final ApplicationEventPublisher applicationEventPublisher;
 
     public void publish(Employee employee, Status status) {
-        applicationEventPublisher.publishEvent(new Event(employee, Status.ADDED));
+        applicationEventPublisher.publishEvent(new Event(employee, status));
     }
+
 }

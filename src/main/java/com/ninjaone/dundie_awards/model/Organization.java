@@ -1,6 +1,8 @@
 package com.ninjaone.dundie_awards.model;
 
 import jakarta.persistence.*;
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,24 +16,27 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Builder
-public class Organization {
+public class Organization implements Serializable {
 
-  @Id
-  private String id;
+    @Serial
+    private static final long serialVersionUID = 3387516993334229948L;
 
-  @Column(name = "name")
-  private String name;
+    @Id
+    private String id;
 
-        @Override
-        public boolean equals(Object o) {
-                if (this == o) return true;
-                if (o == null || getClass() != o.getClass()) return false;
-                Organization that = (Organization) o;
-                return Objects.equals(id, that.id) && Objects.equals(name, that.name);
-        }
+    @Column(name = "name")
+    private String name;
 
-        @Override
-        public int hashCode() {
-                return Objects.hash(id, name);
-        }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Organization that = (Organization) o;
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
+    }
 }

@@ -1,12 +1,13 @@
 package com.ninjaone.dundie_awards.service;
 
+import com.ninjaone.dundie_awards.AwardsCache;
 import static com.ninjaone.dundie_awards.Fixture.dummyEmployee;
 import static com.ninjaone.dundie_awards.Fixture.dummyEmployeeRequest;
 import static com.ninjaone.dundie_awards.Fixture.dummyOrganization;
 import com.ninjaone.dundie_awards.controller.dto.response.EmployeeDTO;
 import com.ninjaone.dundie_awards.event.EventPublisher;
-import com.ninjaone.dundie_awards.event.Status;
 import static com.ninjaone.dundie_awards.event.Status.ADDED;
+import static com.ninjaone.dundie_awards.event.Status.AWARDED;
 import static com.ninjaone.dundie_awards.event.Status.REMOVED;
 import static com.ninjaone.dundie_awards.event.Status.UPDATED;
 import com.ninjaone.dundie_awards.exception.EntityNotFoundException;
@@ -15,23 +16,16 @@ import java.util.Optional;
 import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.clearAllCaches;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -44,6 +38,9 @@ class EmployeeServiceTest {
 
     @Mock
     private EventPublisher eventPublisher;
+
+    @Mock
+    private AwardsCache awardsCache;
 
     @InjectMocks
     private EmployeeService employeeService;
@@ -121,6 +118,23 @@ class EmployeeServiceTest {
 
         assertThat(result).isEqualTo(employeeDTO);
         verify(eventPublisher, times(1)).publish(any(), eq(UPDATED));
+    }
+
+    @Test
+    void updatesAnEmployeesAwardAndPublishesItToTheEventPublisher() {
+        var organization = dummyOrganization();
+        var employee = dummyEmployee("Alex", "Fo", organization, 1);
+        var expectedEmployee = dummyEmployee(employee.getId(), "Alex", "Fo", organization, 2);
+        var employeeDTO = expectedEmployee.toEmployeeDTO();
+
+        when(employeeRepository.findById(employee.getId())).thenReturn(Optional.of(employee));
+        when(employeeRepository.save(expectedEmployee)).thenReturn(expectedEmployee);
+
+        var result = employeeService.updateEmployeeAward(employee.getId());
+
+        assertThat(result).isEqualTo(employeeDTO);
+        verify(eventPublisher, times(1)).publish(any(), eq(AWARDED));
+        verify(awardsCache, times(1)).addOneAward();
     }
 
     @Test
