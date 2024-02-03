@@ -143,7 +143,8 @@ class EmployeeControllerIT extends IntegrationTestParent {
     void updatesAnEmployee() {
         var organization = dummyOrganization();
         var employee = dummyEmployee("Alex", "Pascal", organization);
-        var employeeRequest = dummyEmployeeRequest("Alex", "Doe", organization);
+        var employeeRequest = dummyEmployeeRequest("John", "Doe", organization);
+        var expectedEmployeeDTO = dummyEmployee(employee.getId(), employeeRequest.firstName(), employeeRequest.lastName(), organization).toEmployeeDTO();
 
         organizationRepository.save(organization);
         employeeRepository.save(employee);
@@ -161,8 +162,32 @@ class EmployeeControllerIT extends IntegrationTestParent {
                 .body()
                 .as(EmployeeDTO.class);
 
-        assertThat(employeeDTO.id()).isEqualTo(employee.getId());
-        assertThat(employeeDTO.lastName()).isEqualTo(employeeRequest.lastName());
+        assertThat(employeeDTO).isEqualTo(expectedEmployeeDTO);
+    }
+
+    @Test
+    void updatesAnEmployeeAward() {
+        var organization = dummyOrganization();
+        var employee = dummyEmployee("Alex", "Pascal", organization, 5);
+        var expectedEmployeeDTO = dummyEmployee(employee.getId(), employee.getFirstName(), employee.getLastName(), organization, 6).toEmployeeDTO();
+
+
+        organizationRepository.save(organization);
+        employeeRepository.save(employee);
+
+        EmployeeDTO employeeDTO = given()
+            .contentType(JSON)
+            .when()
+            .pathParam("id", employee.getId())
+            .put(EMPLOYEE_URI + "/{id}/awards")
+            .then()
+            .log().ifValidationFails()
+            .statusCode(SC_OK)
+            .extract()
+            .body()
+            .as(EmployeeDTO.class);
+
+        assertThat(employeeDTO).isEqualTo(expectedEmployeeDTO);
     }
 
     @Test

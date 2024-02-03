@@ -30,18 +30,6 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 public class EmployeeController {
 
-//    @Autowired
-//    private EmployeeRepository employeeRepository;
-//
-//    @Autowired
-//    private ActivityRepository activityRepository;
-//
-//    @Autowired
-//    private MessageBroker messageBroker;
-//
-//    @Autowired
-//    private AwardsCache awardsCache;
-
     private final EmployeeService employeeService;
 
     @GetMapping("/employees")
@@ -84,6 +72,17 @@ public class EmployeeController {
     @ResponseStatus(code = OK)
     public EmployeeDTO updateEmployee(@PathVariable String id, @RequestBody EmployeeRequest employeeRequest) {
         return employeeService.updateEmployee(id, employeeRequest);
+    }
+
+    @PutMapping("/employees/{id}/awards")
+    @Operation(summary = "Updates an employee awards by increasing one")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Successful"),
+        @ApiResponse(responseCode = "404", description = "Not found"),
+    })
+    @ResponseStatus(code = OK)
+    public EmployeeDTO updateEmployeeAward(@PathVariable String id) {
+        return employeeService.updateEmployeeAward(id);
     }
 
     @DeleteMapping("/employees/{id}")

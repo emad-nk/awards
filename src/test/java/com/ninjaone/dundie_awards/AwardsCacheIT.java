@@ -13,9 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 class AwardsCacheIT extends IntegrationTestParent{
 
-//    @Autowired
-//    private RedisTemplate<String, String> redisTemplate;
-
     @Autowired
     private OrganizationRepository organizationRepository;
 

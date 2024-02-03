@@ -1,27 +1,37 @@
 package com.ninjaone.dundie_awards.service;
 
-import com.ninjaone.dundie_awards.AwardsCache;
 import static com.ninjaone.dundie_awards.Fixture.dummyEmployee;
 import static com.ninjaone.dundie_awards.Fixture.dummyEmployeeRequest;
 import static com.ninjaone.dundie_awards.Fixture.dummyOrganization;
-import com.ninjaone.dundie_awards.MessageBroker;
 import com.ninjaone.dundie_awards.controller.dto.response.EmployeeDTO;
+import com.ninjaone.dundie_awards.event.EventPublisher;
+import com.ninjaone.dundie_awards.event.Status;
+import static com.ninjaone.dundie_awards.event.Status.ADDED;
+import static com.ninjaone.dundie_awards.event.Status.REMOVED;
+import static com.ninjaone.dundie_awards.event.Status.UPDATED;
 import com.ninjaone.dundie_awards.exception.EntityNotFoundException;
-import com.ninjaone.dundie_awards.repository.ActivityRepository;
 import com.ninjaone.dundie_awards.repository.EmployeeRepository;
 import java.util.Optional;
 import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.clearAllCaches;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -33,26 +43,20 @@ class EmployeeServiceTest {
     private EmployeeRepository employeeRepository;
 
     @Mock
-    private ActivityRepository activityRepository;
-
-    @Mock
-    private MessageBroker messageBroker;
-
-    @Mock
-    private AwardsCache awardsCache;
+    private EventPublisher eventPublisher;
 
     @InjectMocks
     private EmployeeService employeeService;
 
     @Test
-    void getsListOfEmployeesPaginated(){
+    void getsListOfEmployeesPaginated() {
         var organization = dummyOrganization();
         var employee1 = dummyEmployee("Alex", "Fo", organization);
         var employee2 = dummyEmployee("Sara", "Kalin", organization);
         var expectedResult = new PageImpl<>(
-                Stream.of(employee1, employee2).toList(),
-                PageRequest.of(0, 5),
-                2
+            Stream.of(employee1, employee2).toList(),
+            PageRequest.of(0, 5),
+            2
         );
 
         when(employeeRepository.getEmployees(PageRequest.of(0, 5))).thenReturn(expectedResult);
@@ -66,7 +70,7 @@ class EmployeeServiceTest {
     }
 
     @Test
-    void createsAnEmployee(){
+    void createsAnEmployeeAndPublishesItToEventPublisher() {
         var organization = dummyOrganization();
         var employeeRequest = dummyEmployeeRequest("Alex", "Fo", organization);
         var employee = dummyEmployee("Alex", "Fo", organization);
@@ -77,10 +81,11 @@ class EmployeeServiceTest {
         var result = employeeService.createEmployee(employeeRequest);
 
         assertThat(result).isEqualTo(employeeDTO);
+        verify(eventPublisher, times(1)).publish(any(), eq(ADDED));
     }
 
     @Test
-    void getsAnEmployee(){
+    void getsAnEmployee() {
         var organization = dummyOrganization();
         var employee = dummyEmployee("Alex", "Fo", organization);
         var employeeDTO = employee.toEmployeeDTO();
@@ -93,16 +98,16 @@ class EmployeeServiceTest {
     }
 
     @Test
-    void throwsEntityNotFoundExceptionWhenEmployeeDoesNotExistById(){
+    void throwsEntityNotFoundExceptionWhenEmployeeDoesNotExistById() {
         when(employeeRepository.findById(any())).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> employeeService.getEmployee("non-existent"))
-                .isInstanceOf(EntityNotFoundException.class)
-                .hasMessage("Employee not found with id: non-existent");
+            .isInstanceOf(EntityNotFoundException.class)
+            .hasMessage("Employee not found with id: non-existent");
     }
 
     @Test
-    void updatesAnEmployee(){
+    void updatesAnEmployeeAndPublishesItToTheEventPublisher() {
         var organization = dummyOrganization();
         var employee = dummyEmployee("Alex", "Fo", organization);
         var expectedEmployee = dummyEmployee(employee.getId(), "Suzan", "Kan", organization);
@@ -115,10 +120,11 @@ class EmployeeServiceTest {
         var result = employeeService.updateEmployee(employee.getId(), employeeRequest);
 
         assertThat(result).isEqualTo(employeeDTO);
+        verify(eventPublisher, times(1)).publish(any(), eq(UPDATED));
     }
 
     @Test
-    void deletesAnEmployee(){
+    void deletesAnEmployeeAndPublishesItToTheEventPublisher() {
         var organization = dummyOrganization();
         var employee = dummyEmployee("Alex", "Fo", organization);
 
@@ -128,16 +134,15 @@ class EmployeeServiceTest {
         employeeService.deleteEmployee(employee.getId());
 
         verify(employeeRepository, times(1)).delete(employee);
+        verify(eventPublisher, times(1)).publish(any(), eq(REMOVED));
     }
 
     @Test
-    void throwsEntityNotFoundExceptionWhenDeletingAnEmployeeThatDoesNotExist(){
+    void throwsEntityNotFoundExceptionWhenDeletingAnEmployeeThatDoesNotExist() {
         when(employeeRepository.findById(any())).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> employeeService.deleteEmployee("non-existent"))
             .isInstanceOf(EntityNotFoundException.class)
             .hasMessage("Employee not found with id: non-existent");
     }
-
-
 }
