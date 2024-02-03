@@ -37,3 +37,4 @@ spring:
 redis:
   ttl:
     dundie-awards: 1h
+    employees: 2h

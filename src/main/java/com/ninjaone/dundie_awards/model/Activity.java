@@ -2,13 +2,17 @@ package com.ninjaone.dundie_awards.model;
 
 import jakarta.persistence.*;
 import java.time.Instant;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "activity")
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
+@Builder
 public class Activity {
 
     @Id
@@ -20,10 +24,4 @@ public class Activity {
     @Column(name = "event")
     private String event;
 
-
-    public Activity(Instant occurredAt, String event) {
-        super();
-        this.occurredAt = occurredAt;
-        this.event = event;
-    }
 }

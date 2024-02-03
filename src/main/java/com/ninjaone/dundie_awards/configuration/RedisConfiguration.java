@@ -13,6 +13,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
 @EnableConfigurationProperties(RedisProperties.class)
@@ -25,9 +27,9 @@ public class RedisConfiguration {
     @Bean
     public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory) {
         return RedisCacheManager.builder(connectionFactory)
-                .cacheDefaults(defaultCacheConfiguration())
-                .withInitialCacheConfigurations(buildCacheConfigurations())
-                .build();
+            .cacheDefaults(defaultCacheConfiguration())
+            .withInitialCacheConfigurations(buildCacheConfigurations())
+            .build();
     }
 
     private Map<String, RedisCacheConfiguration> buildCacheConfigurations() {
@@ -43,11 +45,13 @@ public class RedisConfiguration {
     }
 
     public static class CacheNames {
-        public static final String DUDNIE_AWARDS = "dundie-awards";
+        public static final String DUNDIE_AWARDS = "dundie-awards";
+        public static final String EMPLOYEES = "employees";
 
         public static List<String> all() {
             return Stream.of(
-                    DUDNIE_AWARDS
+                DUNDIE_AWARDS,
+                EMPLOYEES
             ).toList();
         }
     }

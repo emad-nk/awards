@@ -16,18 +16,28 @@ public class Fixture {
                 .build();
     }
 
+    public static Employee dummyEmployee(String firstName, String lastName, Organization organization) {
+        return dummyEmployee(randomUUID().toString(), firstName, lastName, organization, 0);
+
+    }
+
+    public static Employee dummyEmployee(String firstName, String lastName, Organization organization, Integer awards) {
+        return dummyEmployee(randomUUID().toString(), firstName, lastName, organization, awards);
+
+    }
+
     public static Employee dummyEmployee(String id, String firstName, String lastName, Organization organization) {
+        return dummyEmployee(id, firstName, lastName, organization, 0);
+    }
+
+    public static Employee dummyEmployee(String id, String firstName, String lastName, Organization organization, Integer awards) {
         return Employee.builder()
             .id(id)
             .firstName(firstName)
             .lastName(lastName)
             .organization(organization)
-            .dundieAwards(0)
+            .dundieAwards(awards)
             .build();
-    }
-
-    public static Employee dummyEmployee(String firstName, String lastName, Organization organization) {
-        return dummyEmployee(randomUUID().toString(), firstName, lastName, organization);
 
     }
 

@@ -17,4 +17,12 @@ public interface EmployeeRepository extends JpaRepository<Employee, String> {
                 """
     )
     Page<Employee> getEmployees(Pageable pageable);
+
+    @Query(
+        nativeQuery = true,
+        value = """
+                    select sum(dundie_awards) from employee
+                """
+    )
+    Integer totalAwards();
 }

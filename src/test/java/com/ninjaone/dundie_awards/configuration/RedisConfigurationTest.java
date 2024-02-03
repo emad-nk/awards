@@ -8,7 +8,7 @@ class RedisConfigurationTest {
     @Test
     void hasTheRightNumberOfCaches(){
         assertThat(RedisConfiguration.CacheNames.all())
-                .hasSize(1)
+                .hasSize(2)
                 .contains("dundie-awards");
     }
 
