@@ -79,7 +79,7 @@ public class EmployeeService {
 
     public void deleteEmployee(String id) {
         var employee = getEmployeeChecked(id);
-        employeeRepository.delete(employee);
+        employeeRepository.delete(employee.getId());
         eventPublisher.publishActivity(employee, REMOVED);
     }
 

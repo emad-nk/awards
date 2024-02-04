@@ -3,6 +3,7 @@ package com.ninjaone.dundie_awards.repository;
 import static com.ninjaone.dundie_awards.Fixture.dummyEmployee;
 import static com.ninjaone.dundie_awards.Fixture.dummyOrganization;
 import com.ninjaone.dundie_awards.IntegrationTestParent;
+import com.ninjaone.dundie_awards.model.Employee;
 import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Test;
@@ -51,6 +52,26 @@ class EmployeeRepositoryIT extends IntegrationTestParent {
         employeeRepository.saveAll(Stream.of(employee1, employee2, employee3).toList());
 
         assertThat(employeeRepository.getTotalAwards()).isEqualTo(16);
+    }
+
+    @Test
+    void deletesAnEmployeeById() {
+        var organization = dummyOrganization();
+        var employee1 = dummyEmployee("John", "Paul", organization, 1);
+        var employee2 = dummyEmployee("Mark", "Haul", organization, 10);
+        var employee3 = dummyEmployee("Angelina", "Pitt", organization, 5);
+
+        organizationRepository.save(organization);
+        employeeRepository.saveAll(Stream.of(employee1, employee2, employee3).toList());
+
+        assertThat(employeeRepository.findAll()).hasSize(3);
+
+        employeeRepository.delete(employee1.getId());
+
+        var remainingEmployees = employeeRepository.findAll();
+
+        assertThat(remainingEmployees).hasSize(2);
+        assertThat(remainingEmployees).doesNotContain(employee1);
     }
 
     @Test
