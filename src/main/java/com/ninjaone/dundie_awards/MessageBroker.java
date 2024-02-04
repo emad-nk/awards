@@ -3,6 +3,8 @@ package com.ninjaone.dundie_awards;
 import com.ninjaone.dundie_awards.event.Status;
 import com.ninjaone.dundie_awards.model.Activity;
 import com.ninjaone.dundie_awards.model.Employee;
+import com.ninjaone.dundie_awards.property.MessageBrokerProperties;
+import com.ninjaone.dundie_awards.property.RedisProperties;
 import com.ninjaone.dundie_awards.repository.ActivityRepository;
 import com.ninjaone.dundie_awards.repository.EmployeeRepository;
 import com.ninjaone.dundie_awards.repository.OrganizationRepository;
@@ -17,6 +19,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,11 +30,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @AllArgsConstructor
 @Slf4j
+@EnableConfigurationProperties(MessageBrokerProperties.class)
 public class MessageBroker {
 
     @Getter
     private final List<Activity> messages = new LinkedList<>();
     private final ActivityRepository activityRepository;
+    private final MessageBrokerProperties messageBrokerProperties;
 
     public void sendMessage(Employee employee, Status status) {
         switch (status) {
@@ -69,7 +74,7 @@ public class MessageBroker {
         // Simulating messages are processed asynchronously and deleted afterward
         CompletableFuture.runAsync(() -> {
             try {
-                Thread.sleep(10000);
+                Thread.sleep(messageBrokerProperties.delayMilliseconds());
                 activityRepository.save(activity);
                 messages.remove(activity);
             } catch (InterruptedException e) {

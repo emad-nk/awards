@@ -2,8 +2,11 @@ package com.ninjaone.dundie_awards;
 
 import com.ninjaone.dundie_awards.controller.dto.request.EmployeeRequest;
 import com.ninjaone.dundie_awards.controller.dto.response.EmployeeDTO;
+import com.ninjaone.dundie_awards.model.Activity;
 import com.ninjaone.dundie_awards.model.Employee;
 import com.ninjaone.dundie_awards.model.Organization;
+import java.time.Instant;
+import static java.time.Instant.now;
 import java.util.UUID;
 import static java.util.UUID.randomUUID;
 
@@ -56,5 +59,13 @@ public class Fixture {
                 .lastName(lastName)
                 .organization(organization)
                 .build();
+    }
+
+    public static Activity dummyActivity() {
+        return Activity.builder()
+            .id(randomUUID().toString())
+            .occurredAt(now())
+            .event("Some random test event")
+            .build();
     }
 }

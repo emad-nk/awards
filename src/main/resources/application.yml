@@ -38,3 +38,21 @@ redis:
   ttl:
     dundie-awards: 1h
     employees: 2h
+
+message-broker:
+  delay-milliseconds: 10000
+
+--- ########################################################################
+spring.config.activate.on-profile: integration-test
+
+message-broker:
+  delay-milliseconds: 50
+
+--- ########################################################################
+spring.config.activate.on-profile: local
+
+--- ########################################################################
+spring.config.activate.on-profile: staging
+
+--- ########################################################################
+spring.config.activate.on-profile: prod

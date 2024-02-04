@@ -5,7 +5,6 @@ import static com.ninjaone.dundie_awards.Fixture.dummyOrganization;
 import com.ninjaone.dundie_awards.IntegrationTestParent;
 import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -42,7 +41,7 @@ class EmployeeRepositoryIT extends IntegrationTestParent {
     }
 
     @Test
-    void getsSumOfAllAwards() {
+    void getsSumOfAllTheAwards() {
         var organization = dummyOrganization();
         var employee1 = dummyEmployee("John", "Paul", organization, 1);
         var employee2 = dummyEmployee("Mark", "Haul", organization, 10);
