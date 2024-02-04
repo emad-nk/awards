@@ -8,28 +8,35 @@ import com.ninjaone.dundie_awards.repository.OrganizationRepository;
 import com.ninjaone.dundie_awards.service.EmployeeService;
 import java.util.Objects;
 import java.util.UUID;
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
-@AllArgsConstructor
+@ConditionalOnProperty(name = "data-loader.enabled", havingValue = "true")
 public class DataLoader implements CommandLineRunner {
 
-    private final EmployeeRepository employeeRepository;
-    private final OrganizationRepository organizationRepository;
-    private final ActivityRepository activityRepository;
-    private final RedisTemplate<String, String> redisTemplate;
-    private final EmployeeService employeeService;
+    @Autowired
+    private EmployeeRepository employeeRepository;
+    @Autowired
+    private OrganizationRepository organizationRepository;
+    @Autowired
+    private ActivityRepository activityRepository;
+    @Autowired
+    private EmployeeService employeeService;
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
+
 
     @Override
     public void run(String... args) {
         Objects.requireNonNull(redisTemplate.getConnectionFactory()).getConnection().serverCommands().flushAll();
         // uncomment to reseed data
-         employeeRepository.deleteAll();
-         organizationRepository.deleteAll();
-         activityRepository.deleteAll();
+        employeeRepository.deleteAll();
+        organizationRepository.deleteAll();
+        activityRepository.deleteAll();
 
         if (employeeRepository.count() == 0) {
             Organization organizationPikashu = new Organization(UUID.randomUUID().toString(), "Pikashu");

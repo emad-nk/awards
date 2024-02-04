@@ -40,7 +40,10 @@ redis:
     employees: 2h
 
 message-broker:
-  delay-milliseconds: 10000
+  delay-milliseconds: 500
+
+data-loader:
+  enabled: false
 
 --- ########################################################################
 spring.config.activate.on-profile: integration-test
@@ -48,8 +51,16 @@ spring.config.activate.on-profile: integration-test
 message-broker:
   delay-milliseconds: 50
 
+data-loader:
+  enabled: false
 --- ########################################################################
 spring.config.activate.on-profile: local
+
+data-loader:
+  enabled: true
+
+message-broker:
+  delay-milliseconds: 8000
 
 --- ########################################################################
 spring.config.activate.on-profile: staging

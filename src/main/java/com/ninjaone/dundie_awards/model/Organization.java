@@ -41,4 +41,12 @@ public class Organization implements Serializable {
     public int hashCode() {
         return Objects.hash(id, name);
     }
+
+    @Override
+    public String toString() {
+        return "Organization{" +
+            "id='" + id + '\'' +
+            ", name='" + name + '\'' +
+            '}';
+    }
 }
