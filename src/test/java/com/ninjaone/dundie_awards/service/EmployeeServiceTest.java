@@ -1,6 +1,5 @@
 package com.ninjaone.dundie_awards.service;
 
-import com.ninjaone.dundie_awards.AwardsCache;
 import static com.ninjaone.dundie_awards.Fixture.dummyEmployee;
 import static com.ninjaone.dundie_awards.Fixture.dummyEmployeeRequest;
 import static com.ninjaone.dundie_awards.Fixture.dummyOrganization;
@@ -40,7 +39,7 @@ class EmployeeServiceTest {
     private EventPublisher eventPublisher;
 
     @Mock
-    private AwardsCache awardsCache;
+    private AwardsCacheService awardsCacheService;
 
     @InjectMocks
     private EmployeeService employeeService;
@@ -134,7 +133,7 @@ class EmployeeServiceTest {
 
         assertThat(result).isEqualTo(employeeDTO);
         verify(eventPublisher, times(1)).publishActivity(any(), eq(AWARDED));
-        verify(awardsCache, times(1)).addAwards((long) 1);
+        verify(awardsCacheService, times(1)).addAwards((long) 1);
     }
 
     @Test

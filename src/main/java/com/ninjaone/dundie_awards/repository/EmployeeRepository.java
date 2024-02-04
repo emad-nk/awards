@@ -32,5 +32,5 @@ public interface EmployeeRepository extends JpaRepository<Employee, String> {
                 select sum(dundie_awards) from employee
             """
     )
-    Integer totalAwards();
+    Integer getTotalAwards();
 }

@@ -1,6 +1,6 @@
 package com.ninjaone.dundie_awards.event;
 
-import com.ninjaone.dundie_awards.AwardsCache;
+import com.ninjaone.dundie_awards.service.AwardsCacheService;
 import com.ninjaone.dundie_awards.MessageBroker;
 import lombok.AllArgsConstructor;
 import org.springframework.context.event.EventListener;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 public class EmployeeEventListener {
 
     private final MessageBroker messageBroker;
-    private final AwardsCache awardsCache;
+    private final AwardsCacheService awardsCacheService;
 
     @EventListener
     @Async
@@ -23,7 +23,7 @@ public class EmployeeEventListener {
     @EventListener
     @Async
     public void processAwardEvent(AwardEvent awardEvent) {
-        awardsCache.addAwards((long) awardEvent.numberOfAwards());
+        awardsCacheService.addAwards((long) awardEvent.numberOfAwards());
     }
 
 }

@@ -1,6 +1,5 @@
 package com.ninjaone.dundie_awards.service;
 
-import com.ninjaone.dundie_awards.AwardsCache;
 import static com.ninjaone.dundie_awards.configuration.RedisConfiguration.CacheNames.EMPLOYEES;
 import com.ninjaone.dundie_awards.controller.dto.request.EmployeeRequest;
 import com.ninjaone.dundie_awards.controller.dto.response.EmployeeDTO;
@@ -13,7 +12,6 @@ import com.ninjaone.dundie_awards.exception.EntityNotFoundException;
 import com.ninjaone.dundie_awards.model.Employee;
 import com.ninjaone.dundie_awards.repository.EmployeeRepository;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;

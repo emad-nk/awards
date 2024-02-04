@@ -1,4 +1,4 @@
-package com.ninjaone.dundie_awards;
+package com.ninjaone.dundie_awards.service;
 
 import static com.ninjaone.dundie_awards.configuration.RedisConfiguration.CacheNames.DUNDIE_AWARDS;
 import com.ninjaone.dundie_awards.repository.EmployeeRepository;
@@ -7,13 +7,13 @@ import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 
-@Component
+@Service
 @AllArgsConstructor
 @Slf4j
-public class AwardsCache {
+public class AwardsCacheService {
 
     private RedisTemplate<String, String> redisTemplate;
     private EmployeeRepository employeeRepository;
@@ -25,12 +25,12 @@ public class AwardsCache {
             if (cacheExists(redisTemplate.keys(DUNDIE_AWARDS))) {
                 return Integer.parseInt(Objects.requireNonNull(redisTemplate.opsForValue().get(DUNDIE_AWARDS)));
             }
-            var totalAwards = employeeRepository.totalAwards();
+            var totalAwards = employeeRepository.getTotalAwards();
             redisTemplate.opsForValue().set(DUNDIE_AWARDS, totalAwards.toString());
             return totalAwards;
         } catch (Exception exception) {
             LOGGER.error("Redis failed to get total amount of awards, fallback to the DB");
-            return employeeRepository.totalAwards();
+            return employeeRepository.getTotalAwards();
         }
     }
 
