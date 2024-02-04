@@ -43,7 +43,7 @@ class AwardsCacheIT extends IntegrationTestParent{
     }
 
     @Test
-    void incrementsTotalAmountOfAwardsByOne(){
+    void incrementsTotalAmountOfAwardsByTwo(){
         var organization = dummyOrganization();
         var expectedAwards = 19;
         var employee1 = dummyEmployee("Angela", "Merkel", organization, 5);
@@ -56,9 +56,17 @@ class AwardsCacheIT extends IntegrationTestParent{
 
         assertThat(totalAwards).isEqualTo(expectedAwards);
 
-        awardsCache.addOneAward();
+        awardsCache.addAwards(2L);
 
-        assertThat(redisTemplate.opsForValue().get(DUNDIE_AWARDS)).isEqualTo("20");
-        assertThat(awardsCache.getTotalAwards()).isEqualTo(20);
+        assertThat(redisTemplate.opsForValue().get(DUNDIE_AWARDS)).isEqualTo("21");
+        assertThat(awardsCache.getTotalAwards()).isEqualTo(21);
+    }
+
+    @Test
+    void incrementsTotalAmountOfAwardsWhenCacheDoesNotExist(){
+        awardsCache.addAwards(5L);
+
+        assertThat(redisTemplate.opsForValue().get(DUNDIE_AWARDS)).isEqualTo("5");
+        assertThat(awardsCache.getTotalAwards()).isEqualTo(5);
     }
 }

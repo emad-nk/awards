@@ -2,7 +2,7 @@ package com.ninjaone.dundie_awards.event;
 
 import com.ninjaone.dundie_awards.model.Employee;
 
-public record Event(
+public record ActivityEvent(
     Employee employee,
     Status status
 ) {

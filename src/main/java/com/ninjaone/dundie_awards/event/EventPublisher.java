@@ -11,8 +11,12 @@ public class EventPublisher {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    public void publish(Employee employee, Status status) {
-        applicationEventPublisher.publishEvent(new Event(employee, status));
+    public void publishActivity(Employee employee, Status status) {
+        applicationEventPublisher.publishEvent(new ActivityEvent(employee, status));
+    }
+
+    public void publishAward(int numberOfAwards) {
+        applicationEventPublisher.publishEvent(new AwardEvent(numberOfAwards));
     }
 
 }

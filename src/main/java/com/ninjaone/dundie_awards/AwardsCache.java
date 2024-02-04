@@ -34,8 +34,8 @@ public class AwardsCache {
         }
     }
 
-    public void addOneAward() {
-        redisTemplate.opsForValue().increment(DUNDIE_AWARDS);
+    public void addAwards(Long numberOfAwards) {
+        redisTemplate.opsForValue().increment(DUNDIE_AWARDS, numberOfAwards);
     }
 
     private boolean cacheExists(Set<String> cache){

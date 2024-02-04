@@ -30,7 +30,6 @@ public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
     private final EventPublisher eventPublisher;
-    private final AwardsCache awardsCache;
 
     @Cacheable(EMPLOYEES)
     public Page<EmployeeDTO> getAllEmployeesPaged(Pageable pageable) {
@@ -50,7 +49,7 @@ public class EmployeeService {
             .dundieAwards(0)
             .organization(employeeRequest.organization())
             .build();
-        eventPublisher.publish(employee, ADDED);
+        eventPublisher.publishActivity(employee, ADDED);
         return employeeRepository.save(employee).toEmployeeDTO();
     }
 
@@ -66,7 +65,7 @@ public class EmployeeService {
         employee.setLastName(employeeRequest.lastName());
         employee.setOrganization(employeeRequest.organization());
 
-        eventPublisher.publish(employee, UPDATED);
+        eventPublisher.publishActivity(employee, UPDATED);
         return employeeRepository.save(employee).toEmployeeDTO();
     }
 
@@ -75,15 +74,15 @@ public class EmployeeService {
         var employee = getEmployeeChecked(id);
         employee.setDundieAwards(employee.getDundieAwards() + 1);
 
-        eventPublisher.publish(employee, AWARDED);
-        CompletableFuture.runAsync(awardsCache::addOneAward);
+        eventPublisher.publishActivity(employee, AWARDED);
+        eventPublisher.publishAward(1);
         return employeeRepository.save(employee).toEmployeeDTO();
     }
 
     public void deleteEmployee(String id) {
         var employee = getEmployeeChecked(id);
         employeeRepository.delete(employee);
-        eventPublisher.publish(employee, REMOVED);
+        eventPublisher.publishActivity(employee, REMOVED);
     }
 
     private Employee getEmployeeChecked(String id) {

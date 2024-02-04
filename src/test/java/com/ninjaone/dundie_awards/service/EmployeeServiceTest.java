@@ -78,7 +78,7 @@ class EmployeeServiceTest {
         var result = employeeService.createEmployee(employeeRequest);
 
         assertThat(result).isEqualTo(employeeDTO);
-        verify(eventPublisher, times(1)).publish(any(), eq(ADDED));
+        verify(eventPublisher, times(1)).publishActivity(any(), eq(ADDED));
     }
 
     @Test
@@ -117,7 +117,7 @@ class EmployeeServiceTest {
         var result = employeeService.updateEmployee(employee.getId(), employeeRequest);
 
         assertThat(result).isEqualTo(employeeDTO);
-        verify(eventPublisher, times(1)).publish(any(), eq(UPDATED));
+        verify(eventPublisher, times(1)).publishActivity(any(), eq(UPDATED));
     }
 
     @Test
@@ -133,8 +133,8 @@ class EmployeeServiceTest {
         var result = employeeService.updateEmployeeAward(employee.getId());
 
         assertThat(result).isEqualTo(employeeDTO);
-        verify(eventPublisher, times(1)).publish(any(), eq(AWARDED));
-        verify(awardsCache, times(1)).addOneAward();
+        verify(eventPublisher, times(1)).publishActivity(any(), eq(AWARDED));
+        verify(awardsCache, times(1)).addAwards((long) 1);
     }
 
     @Test
@@ -148,7 +148,7 @@ class EmployeeServiceTest {
         employeeService.deleteEmployee(employee.getId());
 
         verify(employeeRepository, times(1)).delete(employee);
-        verify(eventPublisher, times(1)).publish(any(), eq(REMOVED));
+        verify(eventPublisher, times(1)).publishActivity(any(), eq(REMOVED));
     }
 
     @Test
