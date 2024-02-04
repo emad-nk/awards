@@ -1,7 +1,7 @@
 package com.ninjaone.dundie_awards.event;
 
-import com.ninjaone.dundie_awards.service.AwardsCacheService;
 import com.ninjaone.dundie_awards.MessageBroker;
+import com.ninjaone.dundie_awards.service.AwardsCacheService;
 import lombok.AllArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;

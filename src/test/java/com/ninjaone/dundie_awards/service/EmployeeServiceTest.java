@@ -38,9 +38,6 @@ class EmployeeServiceTest {
     @Mock
     private EventPublisher eventPublisher;
 
-    @Mock
-    private AwardsCacheService awardsCacheService;
-
     @InjectMocks
     private EmployeeService employeeService;
 
@@ -133,7 +130,7 @@ class EmployeeServiceTest {
 
         assertThat(result).isEqualTo(employeeDTO);
         verify(eventPublisher, times(1)).publishActivity(any(), eq(AWARDED));
-        verify(awardsCacheService, times(1)).addAwards((long) 1);
+        verify(eventPublisher, times(1)).publishAward(1);
     }
 
     @Test

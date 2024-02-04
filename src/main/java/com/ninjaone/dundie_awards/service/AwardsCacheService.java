@@ -15,8 +15,8 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class AwardsCacheService {
 
-    private RedisTemplate<String, String> redisTemplate;
-    private EmployeeRepository employeeRepository;
+    private final RedisTemplate<String, String> redisTemplate;
+    private final EmployeeRepository employeeRepository;
 
 
     // @Cacheable does not work here since increment() expecting a String value and method signature is int

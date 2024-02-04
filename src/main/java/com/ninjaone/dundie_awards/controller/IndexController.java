@@ -1,9 +1,9 @@
 package com.ninjaone.dundie_awards.controller;
 
-import com.ninjaone.dundie_awards.service.AwardsCacheService;
 import com.ninjaone.dundie_awards.MessageBroker;
 import com.ninjaone.dundie_awards.repository.ActivityRepository;
 import com.ninjaone.dundie_awards.repository.EmployeeRepository;
+import com.ninjaone.dundie_awards.service.AwardsCacheService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,11 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class IndexController {
 
     private final EmployeeRepository employeeRepository;
-
     private final ActivityRepository activityRepository;
-
     private final MessageBroker messageBroker;
-
     private final AwardsCacheService awardsCacheService;
 
     @GetMapping()
