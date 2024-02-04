@@ -32,6 +32,13 @@ For running tests, the docker dependencies should be running `./start-deps.sh`.
 
 To stop the dependencies call `./stop-deps.sh`
 
+### Running the app via gradle
+First call `./start-deps.sh` to start the dependencies then use the following gradle commands:
+```
+./gradlew build
+./gradlew run
+```
+
 ## Tech Stack
 
 - Spring boot 3.x
