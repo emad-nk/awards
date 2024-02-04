@@ -1,6 +1,50 @@
-## Implementation Details
+# Implementation details
 
-## Start app
+A service layer has been created so the controller can access it instead of having the whole business logic in the controller.
+
+After each operation, an asynchronous event is sent to get processed and create activities or update the awards cache when applicable.
+
+The purpose of message broker was unclear within the application. Therefore, improvised its behaviour to show it's running on separate non-blocking thread for long-running processes.
+
+Got rid of in memory cache in `AwardsCache` and replaced it with Redis. That brings it closer to production.
+
+Got rid of H2 database and replaced it with Postgres to use proper database migration and bring the application closer to production.
+
+So many things have been refactored, which can be discussed later during the meeting.
+
+## Endpoints
+
+Caching is used for the endpoint that gets all the employees. If save/delete happens on the employee table the cache gets evicted.
+
+Swagger endpoint: `http://localhost:3000/swagger-ui/index.html`
+
+## Tests
+
+I've tried to put as many tests as possible, however tests are covering most important aspects of the code, and the coverage is not 100% due to time constraint.
+
+Integration tests have the naming convention to end with `*IT.java` and unit tests have the naming convention to end with `*Test.java`.
+
+## Starting the application
+
+First call `./start-deps.sh` to start the dependencies, then `StartApplication` in the test package can be called to start the application which starts the application with `local` profile.
+
+For running tests, the docker dependencies should be running `./start-deps.sh`.
+
+To stop the dependencies call `./stop-deps.sh`
+
+## Tech Stack
+
+- Spring boot 3.x
+- Java 17
+- Postgres
+- Redis
+
+## Future Development
+
+- Handling thousands of instruments
+- More test coverage
+- Job to delete old quotes to avoid filling up the DB quickly
+- Workflow diagram
 
 
 ---------
