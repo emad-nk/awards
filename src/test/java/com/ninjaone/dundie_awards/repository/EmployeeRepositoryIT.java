@@ -52,4 +52,9 @@ class EmployeeRepositoryIT extends IntegrationTestParent {
 
         assertThat(employeeRepository.getTotalAwards()).isEqualTo(16);
     }
+
+    @Test
+    void getsZeroForSumOfAllTheAwardsWhenThereAreNoEntriesInTheTable() {
+        assertThat(employeeRepository.getTotalAwards()).isEqualTo(0);
+    }
 }

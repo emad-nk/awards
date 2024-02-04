@@ -1,7 +1,10 @@
 package com.ninjaone.dundie_awards.model;
 
 import com.ninjaone.dundie_awards.controller.dto.response.EmployeeDTO;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -4,24 +4,17 @@ import com.ninjaone.dundie_awards.event.Status;
 import com.ninjaone.dundie_awards.model.Activity;
 import com.ninjaone.dundie_awards.model.Employee;
 import com.ninjaone.dundie_awards.property.MessageBrokerProperties;
-import com.ninjaone.dundie_awards.property.RedisProperties;
 import com.ninjaone.dundie_awards.repository.ActivityRepository;
-import com.ninjaone.dundie_awards.repository.EmployeeRepository;
-import com.ninjaone.dundie_awards.repository.OrganizationRepository;
-import java.time.Instant;
 import static java.time.Instant.now;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 import static java.util.UUID.randomUUID;
 import java.util.concurrent.CompletableFuture;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * The usage of message broker is unclear

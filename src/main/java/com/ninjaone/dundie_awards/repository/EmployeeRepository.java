@@ -29,8 +29,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, String> {
     @Query(
         nativeQuery = true,
         value = """
-                select sum(dundie_awards) from employee
+                select coalesce(sum(dundie_awards), 0) from employee
             """
     )
-    Integer getTotalAwards();
+    int getTotalAwards();
 }

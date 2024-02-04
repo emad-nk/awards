@@ -9,16 +9,21 @@ import static com.ninjaone.dundie_awards.Fixture.dummyEmployeeRequest;
 import static com.ninjaone.dundie_awards.Fixture.dummyOrganization;
 import com.ninjaone.dundie_awards.IntegrationTestParent;
 import com.ninjaone.dundie_awards.controller.dto.response.EmployeeDTO;
+import com.ninjaone.dundie_awards.repository.ActivityRepository;
 import com.ninjaone.dundie_awards.repository.EmployeeRepository;
 import com.ninjaone.dundie_awards.repository.OrganizationRepository;
+import com.ninjaone.dundie_awards.service.AwardsCacheService;
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.apache.http.HttpStatus.SC_CREATED;
 import static org.apache.http.HttpStatus.SC_NOT_FOUND;
 import static org.apache.http.HttpStatus.SC_NO_CONTENT;
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -30,15 +35,21 @@ class EmployeeControllerIT extends IntegrationTestParent {
     private OrganizationRepository organizationRepository;
     @Autowired
     private ObjectMapper objectMapper;
+    @Autowired
+    private AwardsCacheService awardsCacheService;
+    @Autowired
+    private ActivityRepository activityRepository;
 
     private final String EMPLOYEE_URI = "/api/v1/employees";
 
     @Test
-    void createsAnEmployee() {
+    void createsAnEmployeeAndAddsActivityToTheActivityTable() {
         var organization = dummyOrganization();
         var employeeRequest = dummyEmployeeRequest("Alex", "Pascal", organization);
 
         organizationRepository.save(organization);
+
+        assertThat(activityRepository.findAll()).isEmpty();
 
         EmployeeDTO employeeDTO = given()
                 .contentType(JSON)
@@ -56,6 +67,11 @@ class EmployeeControllerIT extends IntegrationTestParent {
         assertThat(employeeDTO.firstName()).isEqualTo(employeeRequest.firstName());
         assertThat(employeeDTO.lastName()).isEqualTo(employeeRequest.lastName());
         assertThat(employeeDTO.dundieAwards()).isEqualTo(0);
+        assertThat(awardsCacheService.getTotalAwards()).isEqualTo(0);
+
+        await().atMost(5, SECONDS).untilAsserted(
+            () -> assertThat(activityRepository.findAll()).hasSize(1)
+        );
     }
 
     @Test
@@ -108,12 +124,14 @@ class EmployeeControllerIT extends IntegrationTestParent {
     }
 
     @Test
-    void deletedAnEmployeeById() {
+    void deletedAnEmployeeByIdAndAddsTheActivityToTheActivityTable() {
         var organization = dummyOrganization();
         var employee = dummyEmployee("Alex", "Pascal", organization);
 
         organizationRepository.save(organization);
         employeeRepository.save(employee);
+
+        assertThat(activityRepository.findAll()).isEmpty();
 
         given()
                 .contentType(JSON)
@@ -125,6 +143,9 @@ class EmployeeControllerIT extends IntegrationTestParent {
                 .statusCode(SC_NO_CONTENT);
 
         assertThat(employeeRepository.findAll()).isEmpty();
+        await().atMost(5, SECONDS).untilAsserted(
+            () -> assertThat(activityRepository.findAll()).hasSize(1)
+        );
     }
 
     @Test
@@ -140,7 +161,7 @@ class EmployeeControllerIT extends IntegrationTestParent {
     }
 
     @Test
-    void updatesAnEmployee() {
+    void updatesAnEmployeeAndAddsTheActivityToTheActivityTable() {
         var organization = dummyOrganization();
         var employee = dummyEmployee("Alex", "Pascal", organization);
         var employeeRequest = dummyEmployeeRequest("John", "Doe", organization);
@@ -148,6 +169,8 @@ class EmployeeControllerIT extends IntegrationTestParent {
 
         organizationRepository.save(organization);
         employeeRepository.save(employee);
+
+        assertThat(activityRepository.findAll()).isEmpty();
 
         EmployeeDTO employeeDTO = given()
                 .contentType(JSON)
@@ -163,10 +186,13 @@ class EmployeeControllerIT extends IntegrationTestParent {
                 .as(EmployeeDTO.class);
 
         assertThat(employeeDTO).isEqualTo(expectedEmployeeDTO);
+        await().atMost(5, SECONDS).untilAsserted(
+            () -> assertThat(activityRepository.findAll()).hasSize(1)
+        );
     }
 
     @Test
-    void updatesAnEmployeeAward() {
+    void updatesAnEmployeeAwardAndItsCacheAndAddsTheActivityToTheActivityTable() {
         var organization = dummyOrganization();
         var employee = dummyEmployee("Alex", "Pascal", organization, 5);
         var expectedEmployeeDTO = dummyEmployee(employee.getId(), employee.getFirstName(), employee.getLastName(), organization, 6).toEmployeeDTO();
@@ -174,6 +200,9 @@ class EmployeeControllerIT extends IntegrationTestParent {
 
         organizationRepository.save(organization);
         employeeRepository.save(employee);
+
+        assertThat(activityRepository.findAll()).isEmpty();
+        assertThat(awardsCacheService.getTotalAwards()).isEqualTo(5);
 
         EmployeeDTO employeeDTO = given()
             .contentType(JSON)
@@ -188,6 +217,13 @@ class EmployeeControllerIT extends IntegrationTestParent {
             .as(EmployeeDTO.class);
 
         assertThat(employeeDTO).isEqualTo(expectedEmployeeDTO);
+
+        await().atMost(5, SECONDS).untilAsserted(
+            () -> {
+                assertThat(activityRepository.findAll()).hasSize(1);
+                assertThat(awardsCacheService.getTotalAwards()).isEqualTo(6);
+            }
+        );
     }
 
     @Test

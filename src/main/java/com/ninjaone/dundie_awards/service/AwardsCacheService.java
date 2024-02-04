@@ -26,7 +26,7 @@ public class AwardsCacheService {
                 return Integer.parseInt(Objects.requireNonNull(redisTemplate.opsForValue().get(DUNDIE_AWARDS)));
             }
             var totalAwards = employeeRepository.getTotalAwards();
-            redisTemplate.opsForValue().set(DUNDIE_AWARDS, totalAwards.toString());
+            redisTemplate.opsForValue().set(DUNDIE_AWARDS, String.valueOf(totalAwards));
             return totalAwards;
         } catch (Exception exception) {
             LOGGER.error("Redis failed to get total amount of awards, fallback to the DB");
