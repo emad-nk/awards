@@ -4,7 +4,7 @@ import com.ninjaone.dundie_awards.model.Organization;
 import lombok.Builder;
 
 @Builder
-public record EmployeeRequest(
+public record EmployeeRequestDTO(
         String firstName,
         String lastName,
         Organization organization

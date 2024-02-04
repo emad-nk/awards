@@ -1,6 +1,6 @@
 package com.ninjaone.dundie_awards.controller;
 
-import com.ninjaone.dundie_awards.controller.dto.request.EmployeeRequest;
+import com.ninjaone.dundie_awards.controller.dto.request.EmployeeRequestDTO;
 import com.ninjaone.dundie_awards.controller.dto.response.EmployeeDTO;
 import com.ninjaone.dundie_awards.service.EmployeeService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -48,8 +48,8 @@ public class EmployeeController {
             @ApiResponse(responseCode = "201", description = "Could save")
     })
     @ResponseStatus(code = CREATED)
-    public EmployeeDTO createEmployee(@RequestBody EmployeeRequest employeeRequest) {
-        return employeeService.createEmployee(employeeRequest);
+    public EmployeeDTO createEmployee(@RequestBody EmployeeRequestDTO employeeRequestDTO) {
+        return employeeService.createEmployee(employeeRequestDTO);
     }
 
     @GetMapping("/employees/{id}")
@@ -70,8 +70,8 @@ public class EmployeeController {
             @ApiResponse(responseCode = "404", description = "Not found"),
     })
     @ResponseStatus(code = OK)
-    public EmployeeDTO updateEmployee(@PathVariable String id, @RequestBody EmployeeRequest employeeRequest) {
-        return employeeService.updateEmployee(id, employeeRequest);
+    public EmployeeDTO updateEmployee(@PathVariable String id, @RequestBody EmployeeRequestDTO employeeRequestDTO) {
+        return employeeService.updateEmployee(id, employeeRequestDTO);
     }
 
     @PutMapping("/employees/{id}/awards")

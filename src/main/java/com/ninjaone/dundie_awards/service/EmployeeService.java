@@ -1,7 +1,7 @@
 package com.ninjaone.dundie_awards.service;
 
 import static com.ninjaone.dundie_awards.configuration.RedisConfiguration.CacheNames.EMPLOYEES;
-import com.ninjaone.dundie_awards.controller.dto.request.EmployeeRequest;
+import com.ninjaone.dundie_awards.controller.dto.request.EmployeeRequestDTO;
 import com.ninjaone.dundie_awards.controller.dto.response.EmployeeDTO;
 import com.ninjaone.dundie_awards.event.EventPublisher;
 import static com.ninjaone.dundie_awards.event.Status.ADDED;
@@ -39,13 +39,13 @@ public class EmployeeService {
         );
     }
 
-    public EmployeeDTO createEmployee(EmployeeRequest employeeRequest) {
+    public EmployeeDTO createEmployee(EmployeeRequestDTO employeeRequestDTO) {
         var employee = Employee.builder()
             .id(UUID.randomUUID().toString())
-            .firstName(employeeRequest.firstName())
-            .lastName(employeeRequest.lastName())
+            .firstName(employeeRequestDTO.firstName())
+            .lastName(employeeRequestDTO.lastName())
             .dundieAwards(0)
-            .organization(employeeRequest.organization())
+            .organization(employeeRequestDTO.organization())
             .build();
         eventPublisher.publishActivity(employee, ADDED);
         return employeeRepository.save(employee).toEmployeeDTO();
@@ -56,12 +56,12 @@ public class EmployeeService {
     }
 
     @Transactional
-    public EmployeeDTO updateEmployee(String id, EmployeeRequest employeeRequest) {
+    public EmployeeDTO updateEmployee(String id, EmployeeRequestDTO employeeRequestDTO) {
         var employee = getEmployeeChecked(id);
 
-        employee.setFirstName(employeeRequest.firstName());
-        employee.setLastName(employeeRequest.lastName());
-        employee.setOrganization(employeeRequest.organization());
+        employee.setFirstName(employeeRequestDTO.firstName());
+        employee.setLastName(employeeRequestDTO.lastName());
+        employee.setOrganization(employeeRequestDTO.organization());
 
         eventPublisher.publishActivity(employee, UPDATED);
         return employeeRepository.save(employee).toEmployeeDTO();

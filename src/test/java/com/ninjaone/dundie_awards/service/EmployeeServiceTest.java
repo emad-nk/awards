@@ -139,11 +139,11 @@ class EmployeeServiceTest {
         var employee = dummyEmployee("Alex", "Fo", organization);
 
         when(employeeRepository.findById(employee.getId())).thenReturn(Optional.of(employee));
-        doNothing().when(employeeRepository).delete(employee);
+        doNothing().when(employeeRepository).delete(employee.getId());
 
         employeeService.deleteEmployee(employee.getId());
 
-        verify(employeeRepository, times(1)).delete(employee);
+        verify(employeeRepository, times(1)).delete(employee.getId());
         verify(eventPublisher, times(1)).publishActivity(any(), eq(REMOVED));
     }
 

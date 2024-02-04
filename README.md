@@ -2,13 +2,13 @@
 
 A service layer has been created so the controller can access it instead of having the whole business logic in the controller.
 
-After each operation, an asynchronous event is sent to get processed and create activities or update the awards cache when applicable.
+After each operation, an asynchronous event is sent via `EventPublisher` to create activities or update the awards cache when applicable.
 
-The purpose of message broker was unclear within the application. Therefore, improvised its behaviour to show it's running on separate non-blocking thread for long-running processes.
+The purpose of message broker was unclear within the application. Therefore, improvised its behaviour to show it's running on a separate non-blocking thread for long-running processes.
 
-Got rid of in memory cache in `AwardsCache` and replaced it with Redis. That brings it closer to production.
+Got rid of in memory cache in `AwardsCache` and replaced it with Redis. That brings it closer to the production code.
 
-Got rid of H2 database and replaced it with Postgres to use proper database migration and bring the application closer to production.
+Got rid of H2 database and replaced it with Postgres to use proper database migration and bring the application closer to the production code.
 
 So many things have been refactored, which can be discussed later during the meeting.
 
@@ -16,7 +16,7 @@ So many things have been refactored, which can be discussed later during the mee
 
 Caching is used for the endpoint that gets all the employees. If save/delete happens on the employee table the cache gets evicted.
 
-Swagger endpoint: `http://localhost:3000/swagger-ui/index.html`
+Swagger endpoint: http://localhost:3000/swagger-ui/index.html
 
 ## Tests
 
@@ -41,9 +41,7 @@ To stop the dependencies call `./stop-deps.sh`
 
 ## Future Development
 
-- Handling thousands of instruments
 - More test coverage
-- Job to delete old quotes to avoid filling up the DB quickly
 - Workflow diagram
 
 
