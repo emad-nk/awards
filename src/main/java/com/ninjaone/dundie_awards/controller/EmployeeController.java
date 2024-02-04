@@ -1,22 +1,19 @@
 package com.ninjaone.dundie_awards.controller;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import com.ninjaone.dundie_awards.AwardsCache;
-import com.ninjaone.dundie_awards.MessageBroker;
-import com.ninjaone.dundie_awards.model.Activity;
-import com.ninjaone.dundie_awards.model.Employee;
-import com.ninjaone.dundie_awards.repository.ActivityRepository;
-import com.ninjaone.dundie_awards.repository.EmployeeRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import com.ninjaone.dundie_awards.controller.dto.request.EmployeeRequestDTO;
+import com.ninjaone.dundie_awards.controller.dto.response.EmployeeDTO;
+import com.ninjaone.dundie_awards.service.EmployeeService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
+import static org.springframework.http.HttpStatus.OK;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,80 +21,78 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
-@RequestMapping()
+@RestController
+@RequestMapping("/api/v1/")
+@Slf4j
+@AllArgsConstructor
 public class EmployeeController {
 
-    @Autowired
-    private EmployeeRepository employeeRepository;
+    private final EmployeeService employeeService;
 
-    @Autowired
-    private ActivityRepository activityRepository;
-
-    @Autowired
-    private MessageBroker messageBroker;
-
-    @Autowired
-    private AwardsCache awardsCache;
-
-    // get all employees
     @GetMapping("/employees")
-    @ResponseBody
-    public List<Employee> getAllEmployees() {
-        return employeeRepository.findAll();
+    @Operation(summary = "Gets all the employees paginated")
+    @ResponseStatus(code = OK)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successful")
+    })
+    public Page<EmployeeDTO> getAllEmployeesPaged(@ParameterObject Pageable pageable) {
+        return employeeService.getAllEmployeesPaged(pageable);
     }
 
-    // create employee rest api
     @PostMapping("/employees")
-    @ResponseBody
-    public Employee createEmployee(@RequestBody Employee employee) {
-        return employeeRepository.save(employee);
+    @Operation(summary = "Saves a new employee in the DB")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Could save")
+    })
+    @ResponseStatus(code = CREATED)
+    public EmployeeDTO createEmployee(@RequestBody EmployeeRequestDTO employeeRequestDTO) {
+        return employeeService.createEmployee(employeeRequestDTO);
     }
 
-    // get employee by id rest api
     @GetMapping("/employees/{id}")
-    @ResponseBody
-    public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {
-        Optional<Employee> optionalEmployee = employeeRepository.findById(id);
-        if (optionalEmployee.isPresent()) {
-            return ResponseEntity.ok(optionalEmployee.get());
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    @Operation(summary = "Gets an employee by ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successful"),
+            @ApiResponse(responseCode = "404", description = "Not found"),
+    })
+    @ResponseStatus(code = OK)
+    public EmployeeDTO getEmployeeById(@PathVariable String  id) {
+        return employeeService.getEmployee(id);
     }
 
-    // update employee rest api
     @PutMapping("/employees/{id}")
-    @ResponseBody
-    public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody Employee employeeDetails) {
-        Optional<Employee> optionalEmployee = employeeRepository.findById(id);
-        if (!optionalEmployee.isPresent()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        Employee employee = optionalEmployee.get();
-        employee.setFirstName(employeeDetails.getFirstName());
-        employee.setLastName(employeeDetails.getLastName());
-
-        Employee updatedEmployee = employeeRepository.save(employee);
-        return ResponseEntity.ok(updatedEmployee);
+    @Operation(summary = "Updates an employee by ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successful"),
+            @ApiResponse(responseCode = "404", description = "Not found"),
+    })
+    @ResponseStatus(code = OK)
+    public EmployeeDTO updateEmployee(@PathVariable String id, @RequestBody EmployeeRequestDTO employeeRequestDTO) {
+        return employeeService.updateEmployee(id, employeeRequestDTO);
     }
 
-    // delete employee rest api
-    @DeleteMapping("/employees/{id}")
-    @ResponseBody
-    public ResponseEntity<Map<String, Boolean>> deleteEmployee(@PathVariable Long id) {
-        Optional<Employee> optionalEmployee = employeeRepository.findById(id);
-        if (!optionalEmployee.isPresent()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    @PutMapping("/employees/{id}/awards")
+    @Operation(summary = "Updates an employee awards by increasing one")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Successful"),
+        @ApiResponse(responseCode = "404", description = "Not found"),
+    })
+    @ResponseStatus(code = OK)
+    public EmployeeDTO updateEmployeeAward(@PathVariable String id) {
+        return employeeService.updateEmployeeAward(id);
+    }
 
-        Employee employee = optionalEmployee.get();
-        employeeRepository.delete(employee);
-        Map<String, Boolean> response = new HashMap<>();
-        response.put("deleted", Boolean.TRUE);
-        return ResponseEntity.ok(response);
+    @DeleteMapping("/employees/{id}")
+    @Operation(summary = "Deletes an employee by ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "No content, succesfully deleted"),
+            @ApiResponse(responseCode = "404", description = "Not found"),
+    })
+    @ResponseStatus(code = NO_CONTENT)
+    public void deleteEmployee(@PathVariable String id) {
+        employeeService.deleteEmployee(id);
     }
 }

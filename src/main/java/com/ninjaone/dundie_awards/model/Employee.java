@@ -1,75 +1,73 @@
 package com.ninjaone.dundie_awards.model;
 
-import jakarta.persistence.*;
+import com.ninjaone.dundie_awards.controller.dto.response.EmployeeDTO;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import java.util.Objects;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
-@Table(name = "employees")
+@Table(name = "employee")
+@Setter
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Employee {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private String id;
 
-    @Column(name = "first_name")
     private String firstName;
 
-    @Column(name = "last_name")
     private String lastName;
 
-    @Column(name = "dundie_awards")
-    private Integer dundieAwards;
+    Integer dundieAwards;
 
     @ManyToOne
     private Organization organization;
 
-    public Employee() {
-
+    public EmployeeDTO toEmployeeDTO() {
+        return EmployeeDTO.builder()
+                .id(this.id)
+                .firstName(this.firstName)
+                .lastName(this.lastName)
+                .dundieAwards(this.dundieAwards)
+                .organization(this.organization)
+                .build();
     }
 
-    public Employee(String firstName, String lastName, Organization organization) {
-        super();
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.organization = organization;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Employee employee = (Employee) o;
+        return Objects.equals(id, employee.id) &&
+            Objects.equals(firstName, employee.firstName) &&
+            Objects.equals(lastName, employee.lastName) &&
+            Objects.equals(dundieAwards, employee.dundieAwards) &&
+            Objects.equals(organization, employee.organization);
     }
 
-    public long getId() {
-        return id;
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, firstName, lastName, dundieAwards, organization);
     }
 
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public Organization getOrganization() {
-        return organization;
-    }
-
-    public void setOrganization(Organization organization) {
-        this.organization = organization;
-    }
-
-    public void setDundieAwards(int dundieAwards){
-        this.dundieAwards = dundieAwards;
-    }
-
-    public Integer getDundieAwards(){
-        return dundieAwards;
+    @Override
+    public String toString() {
+        return "Employee{" +
+            "id='" + id + '\'' +
+            ", firstName='" + firstName + '\'' +
+            ", lastName='" + lastName + '\'' +
+            ", dundieAwards=" + dundieAwards +
+            ", organization=" + organization +
+            '}';
     }
 }

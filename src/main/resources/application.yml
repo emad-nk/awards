@@ -1,32 +1,28 @@
+logging.level:
+  root: INFO
+  org.hibernate.dialect.Dialect: warn
+
 springdoc:
   api-docs:
     path: /openapi
 server:
   port: 3000
+  error:
+    include-message: always
+    include-stacktrace: never
 
 spring:
-  spring:
-    datasource:
-      url: jdbc:h2:mem:mydb
-      username: sa
-      password: password
-      driverClassName: org.h2.Driver
-    jpa:
-      spring.jpa.database-platform: org.hibernate.dialect.H2Dialect
-#  datasource:
-#    url: jdbc:postgresql://localhost:5432/postgres
-#    username: postgres
-#    password: postgres
-#  jpa:
-#    show-sql: true
-#    properties:
-#      ## Hibernate Properties
-#      # The SQL dialect makes Hibernate generate better SQL for the chosen database
-#      hibernate:
-#        dialect: org.hibernate.dialect.PostgreSQLDialect
-#    # Hibernate ddl auto (create, create-drop, validate, update)
-#    hibernate:
-#      ddl-auto: update
+  datasource:
+    url: jdbc:postgresql://localhost:5432/dundie
+    username: dundie
+    password: dundie
+  jpa:
+    show-sql: false # change to true for debugging
+    generate-ddl: false
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+    database: postgresql
   thymeleaf: # Thymeleaf
     cache: false
     mode: HTML
@@ -37,3 +33,41 @@ spring:
       static-locations: file:src/main/resources/static/
       cache:
         period: 0
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+redis:
+  ttl:
+    dundie-awards: 1h
+    employees: 2h
+
+message-broker:
+  delay-milliseconds: 500
+
+data-loader:
+  enabled: false
+
+--- ########################################################################
+spring.config.activate.on-profile: integration-test
+
+message-broker:
+  delay-milliseconds: 50
+
+data-loader:
+  enabled: false
+--- ########################################################################
+spring.config.activate.on-profile: local
+
+data-loader:
+  enabled: true
+
+message-broker:
+  delay-milliseconds: 8000
+
+--- ########################################################################
+spring.config.activate.on-profile: staging
+
+--- ########################################################################
+spring.config.activate.on-profile: prod
