@@ -1,3 +1,7 @@
+logging.level:
+  root: INFO
+  org.hibernate.dialect.Dialect: warn
+
 springdoc:
   api-docs:
     path: /openapi
