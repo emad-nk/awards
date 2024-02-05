@@ -40,6 +40,8 @@ First call `./start-deps.sh` to start the dependencies then use the following gr
 ./gradlew build
 ./gradlew run
 ```
+**NOTE:** Running application via gradle won't run the `DataLoader` to add data to the DB, since DataLoader has been moved to the test package. If you need data to be loaded in the DB please use `StartApplication` in the test package.
+
 
 ## Tech Stack
 
