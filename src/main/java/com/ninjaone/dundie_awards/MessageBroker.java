@@ -61,7 +61,7 @@ public class MessageBroker {
         saveActivity(activity);
     }
 
-    private void saveActivity(Activity activity){
+    private void saveActivity(Activity activity) {
         messages.add(activity);
 
         // Simulating messages are processed asynchronously and deleted afterward
@@ -76,7 +76,7 @@ public class MessageBroker {
         });
     }
 
-    private Activity getActivity(String event){
+    private Activity getActivity(String event) {
         return Activity
             .builder()
             .id(randomUUID().toString())

@@ -38,7 +38,7 @@ public class AwardsCacheService {
         redisTemplate.opsForValue().increment(DUNDIE_AWARDS, numberOfAwards);
     }
 
-    private boolean cacheExists(Set<String> cache){
+    private boolean cacheExists(Set<String> cache) {
         return cache != null && !cache.isEmpty();
     }
 }
