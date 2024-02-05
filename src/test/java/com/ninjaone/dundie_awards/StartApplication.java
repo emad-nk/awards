@@ -4,7 +4,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 
 /**
  * Entry point for starting application locally.
- * This is mostly helpful if Testcontainers are used instead of docker-compose-local
+ * It starts the application with `local` profile so DataLoader loads some data in the DB.
  */
 public class StartApplication {
     public static void main(String[] args) {
