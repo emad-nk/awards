@@ -9,3 +9,6 @@ create table if not exists employee
         foreign key (organization_id)
         references organization(id) on delete cascade
 );
+
+create index if not exists first_name_idx on employee(first_name);
+create index if not exists last_name_idx on employee(last_name);

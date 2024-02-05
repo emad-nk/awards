@@ -12,7 +12,7 @@ public class FlywayConfiguration implements FlywayConfigurationCustomizer {
     @Override
     public void customize(FluentConfiguration configuration) {
         configuration.configuration(
-            new HashMap<>(){{
+            new HashMap<>() {{
                 put("flyway.postgresql.transactional.lock", "false");
             }}
         );

@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * The usage of message broker is unclear
- * To mimic that it's running in a different thread, and it's async it's called from a different thread via BrokerEventListener
+ * To mimic that it's running in a different thread, and it's async it's called from a different thread via EmployeeEventListener
  */
 @Component
 @AllArgsConstructor
@@ -61,7 +61,7 @@ public class MessageBroker {
         saveActivity(activity);
     }
 
-    private void saveActivity(Activity activity){
+    private void saveActivity(Activity activity) {
         messages.add(activity);
 
         // Simulating messages are processed asynchronously and deleted afterward
@@ -76,7 +76,7 @@ public class MessageBroker {
         });
     }
 
-    private Activity getActivity(String event){
+    private Activity getActivity(String event) {
         return Activity
             .builder()
             .id(randomUUID().toString())

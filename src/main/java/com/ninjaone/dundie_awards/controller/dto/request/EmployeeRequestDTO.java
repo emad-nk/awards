@@ -5,8 +5,8 @@ import lombok.Builder;
 
 @Builder
 public record EmployeeRequestDTO(
-        String firstName,
-        String lastName,
-        Organization organization
+    String firstName,
+    String lastName,
+    Organization organization
 ) {
 }

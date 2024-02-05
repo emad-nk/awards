@@ -40,7 +40,7 @@ spring:
 
 redis:
   ttl:
-    dundie-awards: 1h
+    dundie-awards: 6h
     employees: 2h
 
 message-broker:

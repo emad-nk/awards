@@ -1,16 +1,18 @@
 # Implementation details
 
-A service layer has been created so the controller can access it instead of having the whole business logic in the controller.
+A service layer has been created so the controller can access it instead of accessing repositories directly and having the whole business logic in the controller.
 
-After each operation, an asynchronous event is sent via `EventPublisher` to create activities or update the awards cache when applicable.
+The purpose of message broker was unclear within the application, so improvised its behaviour to show it is running on a separate non-blocking thread for long-running processes. Therefore, after each CRUD operation, an asynchronous event is sent via `EventPublisher` to create activities or update the awards cache when applicable.
 
-The purpose of message broker was unclear within the application. Therefore, improvised its behaviour to show it's running on a separate non-blocking thread for long-running processes.
-
-Got rid of in memory cache in `AwardsCache` and replaced it with Redis. That brings it closer to the production code.
+Got rid of in memory cache in `AwardsCache` and replaced it with Redis. That brings it closer to the production code, and in case an instance goes down the cache does not get removed.
 
 Got rid of H2 database and replaced it with Postgres to use proper database migration and bring the application closer to the production code.
 
+Used Lombok to get rid of a lot of boilerplate code.
+
 So many things have been refactored, which can be discussed later during the meeting.
+
+Due to time constraints some parts/refactorings have been skipped, please read the [Future Development](#future-development) section for more details.
 
 ## Endpoints
 
@@ -26,7 +28,7 @@ Integration tests have the naming convention to end with `*IT.java` and unit tes
 
 ## Starting the application
 
-First call `./start-deps.sh` to start the dependencies, then `StartApplication` in the test package can be called to start the application which starts the application with `local` profile.
+First call `./start-deps.sh` to start the dependencies, then `StartApplication` in the **test** package can be called to start the application which starts the application with `local` profile.
 
 For running tests, the docker dependencies should be running `./start-deps.sh`.
 
@@ -48,6 +50,10 @@ First call `./start-deps.sh` to start the dependencies then use the following gr
 
 ## Future Development
 
+- A controller for the `organization`, so organizations can be created/updated/deleted via endpoints.
+- Refactor `IndexController` similar to the `EmployeeController` to not access repositories directly but access via different services.
+- Separate services for Activity and Organization
+- Sending metrics of failures/successes
 - More test coverage
 - Workflow diagram
 

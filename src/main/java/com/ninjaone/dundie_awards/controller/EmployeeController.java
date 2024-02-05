@@ -36,7 +36,7 @@ public class EmployeeController {
     @Operation(summary = "Gets all the employees paginated")
     @ResponseStatus(code = OK)
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful")
+        @ApiResponse(responseCode = "200", description = "Successful")
     })
     public Page<EmployeeDTO> getAllEmployeesPaged(@ParameterObject Pageable pageable) {
         return employeeService.getAllEmployeesPaged(pageable);
@@ -45,32 +45,35 @@ public class EmployeeController {
     @PostMapping("/employees")
     @Operation(summary = "Saves a new employee in the DB")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Could save")
+        @ApiResponse(responseCode = "201", description = "Could save")
     })
     @ResponseStatus(code = CREATED)
     public EmployeeDTO createEmployee(@RequestBody EmployeeRequestDTO employeeRequestDTO) {
+        LOGGER.debug("Request to create an employee: {}", employeeRequestDTO);
         return employeeService.createEmployee(employeeRequestDTO);
     }
 
     @GetMapping("/employees/{id}")
     @Operation(summary = "Gets an employee by ID")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful"),
-            @ApiResponse(responseCode = "404", description = "Not found"),
+        @ApiResponse(responseCode = "200", description = "Successful"),
+        @ApiResponse(responseCode = "404", description = "Not found"),
     })
     @ResponseStatus(code = OK)
-    public EmployeeDTO getEmployeeById(@PathVariable String  id) {
+    public EmployeeDTO getEmployeeById(@PathVariable String id) {
+        LOGGER.debug("Request to get an employee with id: {}", id);
         return employeeService.getEmployee(id);
     }
 
     @PutMapping("/employees/{id}")
     @Operation(summary = "Updates an employee by ID")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful"),
-            @ApiResponse(responseCode = "404", description = "Not found"),
+        @ApiResponse(responseCode = "200", description = "Successful"),
+        @ApiResponse(responseCode = "404", description = "Not found"),
     })
     @ResponseStatus(code = OK)
     public EmployeeDTO updateEmployee(@PathVariable String id, @RequestBody EmployeeRequestDTO employeeRequestDTO) {
+        LOGGER.debug("Request to update an employee: {} with id: {}", employeeRequestDTO, id);
         return employeeService.updateEmployee(id, employeeRequestDTO);
     }
 
@@ -82,17 +85,19 @@ public class EmployeeController {
     })
     @ResponseStatus(code = OK)
     public EmployeeDTO updateEmployeeAward(@PathVariable String id) {
+        LOGGER.debug("Request to update an employee award with id: {}", id);
         return employeeService.updateEmployeeAward(id);
     }
 
     @DeleteMapping("/employees/{id}")
     @Operation(summary = "Deletes an employee by ID")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "No content, succesfully deleted"),
-            @ApiResponse(responseCode = "404", description = "Not found"),
+        @ApiResponse(responseCode = "204", description = "No content, successfully deleted"),
+        @ApiResponse(responseCode = "404", description = "Not found"),
     })
     @ResponseStatus(code = NO_CONTENT)
     public void deleteEmployee(@PathVariable String id) {
+        LOGGER.debug("Request to delete an employee with id: {}", id);
         employeeService.deleteEmployee(id);
     }
 }

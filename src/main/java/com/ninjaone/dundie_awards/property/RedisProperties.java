@@ -6,6 +6,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties("redis")
 public record RedisProperties(
-        Map<String, Duration> ttl
+    Map<String, Duration> ttl
 ) {
 }
