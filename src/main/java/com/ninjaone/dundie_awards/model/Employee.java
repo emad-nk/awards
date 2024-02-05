@@ -35,12 +35,12 @@ public class Employee {
 
     public EmployeeDTO toEmployeeDTO() {
         return EmployeeDTO.builder()
-                .id(this.id)
-                .firstName(this.firstName)
-                .lastName(this.lastName)
-                .dundieAwards(this.dundieAwards)
-                .organization(this.organization)
-                .build();
+            .id(this.id)
+            .firstName(this.firstName)
+            .lastName(this.lastName)
+            .dundieAwards(this.dundieAwards)
+            .organization(this.organization)
+            .build();
     }
 
     @Override

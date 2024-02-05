@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * The usage of message broker is unclear
- * To mimic that it's running in a different thread, and it's async it's called from a different thread via BrokerEventListener
+ * To mimic that it's running in a different thread, and it's async it's called from a different thread via EmployeeEventListener
  */
 @Component
 @AllArgsConstructor

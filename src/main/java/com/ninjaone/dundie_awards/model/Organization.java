@@ -26,7 +26,6 @@ public class Organization implements Serializable {
     @Id
     private String id;
 
-    @Column(name = "name")
     private String name;
 
     @Override
