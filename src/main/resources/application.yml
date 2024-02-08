@@ -13,9 +13,9 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/dundie
-    username: dundie
-    password: dundie
+    url: jdbc:postgresql://localhost:5432/award
+    username: award
+    password: award
   jpa:
     show-sql: false # change to true for debugging
     generate-ddl: false
@@ -40,7 +40,7 @@ spring:
 
 redis:
   ttl:
-    dundie-awards: 6h
+    awards: 6h
     employees: 2h
 
 message-broker:

@@ -65,9 +65,7 @@ First call `./start-deps.sh` to start the dependencies then use the following gr
 
 This is an application for managing employees of a company. Employees belong to organizations within the company.
 
-As recognition, employees can receive Dundie Awards.
-
-* A `Dundie Award` is in reference to the TV show [The Office](https://en.wikipedia.org/wiki/The_Dundies) in which the main character hands out awards to his colleagues. For our purposes, it's a generic award.
+As recognition, employees can receive Awards.
 
 ## Instructions
 

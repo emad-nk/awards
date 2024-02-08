@@ -13,7 +13,7 @@ java {
 }
 
 application {
-    mainClass.set("com.ninjaone.dundie_awards.DundieAwardsApplication")
+    mainClass.set("com.no.awards.AwardsApplication")
 }
 
 repositories {

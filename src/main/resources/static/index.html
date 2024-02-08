@@ -15,7 +15,7 @@
 </head>
 <body>
 <div class="mt-5">
-    <p>Total Dundie Awards: <span th:text="${totalDundieAwards}"></span></p>
+    <p>Total Dundie Awards: <span th:text="${totalAwards}"></span></p>
 </div>
 
 <div th:switch="${employees}" class="mt-5">
@@ -27,7 +27,7 @@
             <tr>
                 <th>First name</th>
                 <th>Last name</th>
-                <th>Dundie Awards</th>
+                <th>Awards</th>
                 <th>Organization id</th>
                 <th>Organization name</th>
             </tr>
@@ -36,7 +36,7 @@
             <tr th:each="employee : ${employees}">
                 <td th:text="${employee.firstName}"></td>
                 <td th:text="${employee.lastName}"></td>
-                <td th:text="${employee.dundieAwards}"></td>
+                <td th:text="${employee.awards}"></td>
                 <td th:text="${employee.organization.id}"></td>
                 <td th:text="${employee.organization.name}"></td>
             </tr>
