@@ -5,9 +5,9 @@ services:
   postgres:
     image: postgres:13.10-alpine
     environment:
-      - POSTGRES_DB=dundie
-      - POSTGRES_USER=dundie
-      - POSTGRES_PASSWORD=dundie
+      - POSTGRES_DB=award
+      - POSTGRES_USER=award
+      - POSTGRES_PASSWORD=award
     ports:
       - 5432:5432
   redis:
